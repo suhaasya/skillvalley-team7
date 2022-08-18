@@ -102,7 +102,7 @@ Will update soon...
 Anjali Chauhan - [@anjalii1102](https://twitter.com/anjalii1102) - ac.chauhan1102@gmail.com <br />
 Github Link: [https://github.com/anjali1102](https://github.com/anjali1102)
 
-Aslam Khan - [@ak_aslamkhan\_\_](https://twitter.com/ak_aslamkhan__) - email@example.com <br />
+Aslam Khan - [@ak_aslamkhan\_\_](https://twitter.com/ak_aslamkhan__) - akkhans8125@gmail.com <br />
 Github Link: [https://github.com/akaslamkhan](https://github.com/akaslamkhan)
 
 Kelvin Parmar - [@Kelvinparmar12](https://twitter.com/Kelvinparmar12) - pkelvin123456789@gmail.com <br />
