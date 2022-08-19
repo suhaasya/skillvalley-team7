@@ -90,9 +90,7 @@ Don't forget to give the project a star! Thanks again!
 
 ## Journey
 
-Will update soon...
-
-<!-- Blog Link: [https://example.com](https://github.com/suhaasya/skillvalley) -->
+[Documentation](https://chrome-mustang-767.notion.site/bb8d6a596b2f422f911493ebd9668863?v=d926459033174a80b502fd3c078a6a55)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 <!-- CONTACT -->
