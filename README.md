@@ -29,7 +29,7 @@
 
 ## About The Project
 
-Will update soon...
+This project is a part of Skillvalley Cohort.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -48,16 +48,24 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+- Node: [Install Node](https://nodejs.org/en/download/)
+- System Dependencies: npm (comes packaged with Node)
 
-- npm
-  ```sh
-  npm install npm@latest -g
-  ```
+### Code formatter
+
+- Install prettier extension for your IDE (i.e., [Prettier Formatter for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)). Your code will be auto fomatted on save.
 
 ### Installation
 
-Will update soon...
+- start react client
+
+```
+cd client
+npm i
+npm start
+```
+
+User can navigate at http://localhost:3000
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -78,11 +86,7 @@ Contributions are what make the open source community such an amazing place to l
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 Don't forget to give the project a star! Thanks again!
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Check out [Contributing.md](./Contributing.md)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
