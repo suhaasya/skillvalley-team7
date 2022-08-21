@@ -29,7 +29,7 @@ git checkout -b my_new_branch
 4. Add https://github.com/suhaasya/skillvalley-team7 as your upstream:
 
 ```
-git remote add upstream https://github.com/adoptium/aqa-tests.git
+git remote add upstream https://github.com/suhaasya/skillvalley-team7
 ```
 
 5. Before you start working on the issue, plese make sure the local branch is up to date:
