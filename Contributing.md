@@ -1,4 +1,4 @@
-# Contributing to aqa-tests
+# Contributing to our project
 
 Thanks for your interest in this project.
 
