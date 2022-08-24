@@ -71,7 +71,7 @@ git push origin my_new_branch
 
 8. We would like to encourage you to open a pull request early and use `Create draft pull request` option. This allows others to check the PR, get early feedback, and helps create a better end product.
 
-   Note: create pull request to preview branch not to master
+   Note: while creating pull request make sure to keep base branch as preview
 
 9. Convert PR to `Ready for review` once the PR is ready.
 
