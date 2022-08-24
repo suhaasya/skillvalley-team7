@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { styled, alpha } from "@mui/material/styles";
-import InputBase from "@mui/material/InputBase";
-import SearchIcon from "@mui/icons-material/Search";
 import Avatar from "@mui/material/Avatar";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
+import {
+  InputBase,
+  SearchIcon,
+  LogoutIcon,
+  SettingsIcon,
+  AccountCircleIcon,
+} from "@mui/icons-material/";
 import ProfileCard from "./ProfileCard";
 
 const Search = styled("div")(({ theme }) => ({
