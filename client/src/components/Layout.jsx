@@ -13,18 +13,23 @@ export default function Layout({
   return (
     <section className="">
       <Navbar />
-      <main className="flex md:px-[5%] lg:px-[12%] bg-[#F6F8FA] h-[91.5vh]">
+      <main className="flex md:px-[5%] lg:px-[12%] bg-dark_white h-[91.5vh]">
         <Sidebar
           home={home}
           bookmarks={bookmarks}
           messages={messages}
           profile={profile}
         />
-        <section className="bg-[#FAFBFC] w-full px-[2%] lg:w-4/5 border-solid border-x-2 border-[#E1E4E8] overflow-y-scroll">
+        <section className="bg-white w-full px-[2%] lg:w-4/5 border-solid border-x-2 border-light_gray overflow-y-scroll">
           {children}
         </section>
       </main>
-      <Footer />
+      <Footer
+        home={home}
+        bookmarks={bookmarks}
+        messages={messages}
+        profile={profile}
+      />
     </section>
   );
 }

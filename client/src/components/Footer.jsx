@@ -1,39 +1,47 @@
 import React from "react";
-import menuItem from "../data/menuItem";
-// import HomeIcon from "@mui/icons-material/Home";
-// import BookmarkIcon from "@mui/icons-material/Bookmark";
-// import MessageIcon from "@mui/icons-material/Message";
-// import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { AiOutlineHome, AiFillHome } from "react-icons/ai";
+import {
+  RiMessage2Line,
+  RiMessage2Fill,
+  RiBookmarkFill,
+  RiBookmarkLine,
+  RiAccountCircleLine,
+  RiAccountCircleFill,
+} from "react-icons/ri";
+import MenuItem from "./MenuItem";
 
-export default function Footer() {
+export default function Footer({ home, bookmarks, messages, profile }) {
   return (
-    <div class="stickyBottomNav lg:hidden fixed left-0 bottom-0 w-full z-10 bg-[#F6F8FA] text-center text-[#212121]">
-      <ul className="flex justify-around px-[2%] md:px-[5%] py-[1%]">
-        {/* <li className="">
-          <HomeIcon />
-          <p>Home</p>
-        </li>
-        <li>
-          <BookmarkIcon />
-          <p>Bookmarks</p>
-        </li>
-        <li>
-          <MessageIcon />
-          <p>Messages</p>
-        </li>
-        <li>
-          <AccountCircleIcon />
-          <p>Profile</p>
-        </li> */}
-
-        {menuItem.map((item) => {
-          return (
-            <li className="">
-              {item.icon}
-              <p>{item.name}</p>
-            </li>
-          );
-        })}
+    <div className="stickyBottomNav lg:hidden fixed left-0 bottom-0 w-full z-10 bg-dark_white text-center text-black">
+      <ul className="flex justify-around ">
+        <MenuItem
+          name={"Home"}
+          icon={<AiOutlineHome />}
+          iconActive={<AiFillHome />}
+          condition={home}
+          secondary={true}
+        />
+        <MenuItem
+          name={"Bookmarks"}
+          icon={<RiBookmarkLine />}
+          iconActive={<RiBookmarkFill />}
+          condition={bookmarks}
+          secondary={true}
+        />
+        <MenuItem
+          name={"Messages"}
+          icon={<RiMessage2Line />}
+          iconActive={<RiMessage2Fill />}
+          condition={messages}
+          secondary={true}
+        />
+        <MenuItem
+          name={"Profile"}
+          icon={<RiAccountCircleLine />}
+          iconActive={<RiAccountCircleFill />}
+          condition={profile}
+          secondary={true}
+        />
       </ul>
     </div>
   );
