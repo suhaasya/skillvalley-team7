@@ -9,7 +9,14 @@ function App() {
       <Layout home={true}>
         <ul className="md:px-24 py-2">
           {posts.map((post) => (
-            <PostCard post={post} key={post._id} />
+            <PostCard
+              post={post}
+              authorName={`${post.user.firstName} ${post.user.lastName}`}
+              publishedDate={post.post.date}
+              message={post.post.message}
+              likes={post.post.likes}
+              key={post._id}
+            />
           ))}
 
           <li className="mb-4 text-xs pb-4 text-center">

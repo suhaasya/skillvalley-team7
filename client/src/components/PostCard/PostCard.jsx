@@ -5,7 +5,12 @@ import { MdOutlineInsertComment, MdOutlineThumbUp } from "react-icons/md";
 import stringAvatar from "../../utils/stringAvatar";
 import "./PostCard.css";
 
-export default function PostCard({ post }) {
+export default function PostCard({
+  authorName,
+  publishedDate,
+  message,
+  likes,
+}) {
   const [showMenu, setShowMenu] = useState(false);
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
@@ -14,14 +19,12 @@ export default function PostCard({ post }) {
   return (
     <li className="border-solid border-b-2 border-light_gray mb-4 cursor-pointer">
       <div className="flex items-center">
-        <Avatar
-          {...stringAvatar(`${post.user.firstName} ${post.user.lastName}`)}
-        />
+        <Avatar {...stringAvatar(authorName)} />
         <div className="ml-2">
           <h5 className="text-sm font-medium hover-underline-animation ">
-            {`${post.user.firstName} ${post.user.lastName}`}
+            {authorName}
           </h5>
-          <p className="text-xs text-gray">Shared a post • {post.post.date}</p>
+          <p className="text-xs text-gray">Shared a post • {publishedDate}</p>
         </div>
         <button className="relative ml-auto" onClick={handleShowMenu}>
           <GoKebabVertical />
@@ -42,7 +45,7 @@ export default function PostCard({ post }) {
           </ul>
         </button>
       </div>
-      <p className="leading-loose px-1 py-2 sm:px-12">{post.post.message}</p>
+      <p className="leading-loose px-1 py-2 sm:px-12">{message}</p>
       <div className="flex px-1 py-2 sm:px-12 items-center gap-12 ">
         <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
           <MdOutlineInsertComment size={"1.25rem"} />
@@ -51,7 +54,7 @@ export default function PostCard({ post }) {
           <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
             <MdOutlineThumbUp size={"1.25rem"} />
           </button>
-          <p className="p-2 text-sm">{post.post.likes}</p>
+          <p className="p-2 text-sm">{likes}</p>
         </div>
       </div>
     </li>

@@ -2,7 +2,7 @@ import React from "react";
 import Avatar from "@mui/material/Avatar";
 import stringAvatar from "../utils/stringAvatar";
 
-export default function ProfileCard({ user, noUser }) {
+export default function ProfileCard({ noUser, userName, userBio }) {
   return noUser ? (
     <li className="py-1 px-2 text-center">
       <p className="text-xs font-light">
@@ -11,11 +11,11 @@ export default function ProfileCard({ user, noUser }) {
     </li>
   ) : (
     <li className="hover:bg-dark_white py-1 px-2 cursor-pointer flex items-center gap-1">
-      <Avatar {...stringAvatar(`${user.firstName} ${user.lastName}`)} />
+      <Avatar {...stringAvatar(userName)} />
 
       <div>
-        <h6 className="text-sm">{`${user.firstName} ${user.lastName}`}</h6>
-        <p className="text-xs">{user.description}</p>
+        <h6 className="text-sm">{userName}</h6>
+        <p className="text-xs">{userBio}</p>
       </div>
     </li>
   );
