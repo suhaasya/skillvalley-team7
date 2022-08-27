@@ -1,68 +1,42 @@
 import React, { useState } from "react";
-import { styled, alpha } from "@mui/material/styles";
-import { InputBase, Avatar } from "@mui/material";
+
+import { Avatar } from "@mui/material";
 import {
-  Search as SearchIcon,
-  Logout as LogoutIcon,
-  Settings as SettingsIcon,
-  AccountCircle as AccountCircleIcon,
-} from "@mui/icons-material";
+  RiLogoutBoxRLine,
+  RiSettings5Line,
+  RiAccountCircleLine,
+} from "react-icons/ri";
+
 import ProfileCard from "./ProfileCard";
-
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    border: "1px solid #959DA5",
-    borderRadius: "5px",
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "29ch",
-      },
-    },
-  },
-}));
+import users from "../backend/db/users";
+import stringAvatar from "../utils/stringAvatar";
+import SearchBar from "./SearchBar";
 
 export default function Navbar() {
   const [popUpMenu, setPopUpMenu] = useState(false);
   const [searchResult, setSearchResult] = useState(false);
+  const [userData, setUserData] = useState(users);
+  const [searchValue, setSearchValue] = useState("");
 
   function handleChange(e) {
-    console.log(e);
     setPopUpMenu(false);
     const { value } = e.target;
-    value.length >= 1 ? setSearchResult(true) : setSearchResult(false);
+    setSearchValue(value.toLowerCase());
+
+    if (value.length > 0) {
+      setSearchResult(true);
+      setUserData((prev) =>
+        prev.filter((item) =>
+          `${item.firstName} ${item.lastName}`
+            .toLowerCase()
+            .includes(searchValue)
+        )
+      );
+    } else {
+      setSearchResult(false);
+      setSearchValue("");
+      setUserData(users);
+    }
   }
 
   function handleClick() {
@@ -75,35 +49,6 @@ export default function Navbar() {
     searchResult && setSearchResult(false);
   }
 
-  function stringToColor(string) {
-    let hash = 0;
-    let i;
-
-    /* eslint-disable no-bitwise */
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = "#";
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-    /* eslint-enable no-bitwise */
-
-    return color;
-  }
-
-  function stringAvatar(name) {
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-      },
-      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
-    };
-  }
-
   return (
     <nav
       className="flex items-center px-[2%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
@@ -112,27 +57,27 @@ export default function Navbar() {
       <button className="logo">T7</button>
       <div className="ml-auto flex gap-[2.5%]">
         <div className="relative">
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon sx={{ color: "#959DA5" }} />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-              onChange={handleChange}
-            />
-          </Search>
+          <SearchBar
+            onChange={handleChange}
+            value={searchValue}
+            setValue={setSearchValue}
+          />
           <ul
             className={
               searchResult
-                ? "absolute border-solid border-2 rounded-lg p-1 bg-white left-1 top-12 w-60 sm:w-80 max-h-80 overflow-y-scroll"
+                ? "absolute border-solid border-2 rounded-lg p-1 bg-white top-12 w-60 sm:w-80 max-h-80 overflow-y-scroll z-10"
                 : "hidden"
             }
           >
             {/* 
             Profile Card shown in search result
             */}
-            <ProfileCard stringAvatar={stringAvatar} />
+
+            {userData.length > 0 ? (
+              userData.map((user) => <ProfileCard user={user} key={user._id} />)
+            ) : (
+              <ProfileCard noUser={true} />
+            )}
           </ul>
         </div>
 
@@ -153,15 +98,15 @@ export default function Navbar() {
             }
           >
             <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
-              <AccountCircleIcon />
+              <RiAccountCircleLine />
               <p>Profile</p>
             </li>
             <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
-              <SettingsIcon />
+              <RiSettings5Line />
               <p>Settings</p>
             </li>
             <li className="hover:bg-dark_white py-2 px-4 cursor-pointer text-red border-solid border-t-2 border-light_gray flex items-center gap-1">
-              <LogoutIcon />
+              <RiLogoutBoxRLine />
               <p>Log out</p>
             </li>
           </ul>
