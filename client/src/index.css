@@ -127,16 +127,25 @@ table {
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: "Inter", sans-serif;
-  position: relative;
+:root {
+  --green: #00aa45;
+  --light_green: #e2f5ea;
+  --dark_green: #219653;
+  --black: #212121;
+  --gray: #6a737d;
+  --light_gray: #e1e4e8;
+  --dark_gray: #959da5;
+  --white: #ffffff;
+  --light_white: #fafbfc;
+  --dark_white: #f6f8fa;
+  --red: #eb5757;
 }
 
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
 * {
   scrollbar-width: auto;
-  scrollbar-color: #babac0 #ffffff;
+  scrollbar-color: var(--gray) var(--white);
 }
 
 /* Chrome, Edge, and Safari */
@@ -155,4 +164,10 @@ body {
   border-radius: 1rem;
   border: 3px solid #ffffff;
   margin-left: 1rem;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  position: relative;
+  color: var(--black);
 }

@@ -1,12 +1,29 @@
-import HomeIcon from "@mui/icons-material/Home";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import MessageIcon from "@mui/icons-material/Message";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { AiOutlineHome, AiFillHome } from "react-icons/ai";
+import {
+  RiMessage2Line,
+  RiMessage2Fill,
+  RiBookmarkFill,
+  RiBookmarkLine,
+  RiAccountCircleLine,
+  RiAccountCircleFill,
+} from "react-icons/ri";
 
 const menuItem = [
-  { icon: <HomeIcon />, name: "Home" },
-  { icon: <BookmarkIcon />, name: "Bookmarks" },
-  { icon: <MessageIcon />, name: "Messages" },
-  { icon: <AccountCircleIcon />, name: "Profile" },
+  { icon: <AiOutlineHome />, iconActive: <AiFillHome />, name: "Home" },
+  {
+    icon: <RiBookmarkLine />,
+    iconActive: <RiBookmarkFill />,
+    name: "Bookmarks",
+  },
+  {
+    icon: <RiMessage2Line />,
+    iconActive: <RiMessage2Fill />,
+    name: "Messages",
+  },
+  {
+    icon: <RiAccountCircleLine />,
+    iconActive: <RiAccountCircleFill />,
+    name: "Profile",
+  },
 ];
 export default menuItem;

@@ -106,7 +106,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="flex items-center px-[2%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-[#E1E4E8] lg:px-[12%]"
+      className="flex items-center px-[2%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
       onClick={closeMenu}
     >
       <button className="logo">T7</button>
@@ -152,15 +152,15 @@ export default function Navbar() {
                 : "hidden"
             }
           >
-            <li className="hover:bg-[#F6F8FA] py-2 px-4 cursor-pointer flex items-center gap-1">
+            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
               <AccountCircleIcon />
               <p>Profile</p>
             </li>
-            <li className="hover:bg-[#F6F8FA] py-2 px-4 cursor-pointer flex items-center gap-1">
+            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
               <SettingsIcon />
               <p>Settings</p>
             </li>
-            <li className="hover:bg-[#F6F8FA] py-2 px-4 cursor-pointer text-[#EB5757] border-solid border-t-2 border-[#E1E4E8] flex items-center gap-1">
+            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer text-red border-solid border-t-2 border-light_gray flex items-center gap-1">
               <LogoutIcon />
               <p>Log out</p>
             </li>
