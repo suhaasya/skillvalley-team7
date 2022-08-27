@@ -10,7 +10,6 @@ function App() {
         <ul className="md:px-24 py-2">
           {posts.map((post) => (
             <PostCard
-              post={post}
               authorName={`${post.user.firstName} ${post.user.lastName}`}
               publishedDate={post.post.date}
               message={post.post.message}
