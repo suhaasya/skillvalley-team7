@@ -74,7 +74,13 @@ export default function Navbar() {
             */}
 
             {userData.length > 0 ? (
-              userData.map((user) => <ProfileCard user={user} key={user._id} />)
+              userData.map((user) => (
+                <ProfileCard
+                  userName={`${user.firstName} ${user.lastName}`}
+                  userBio={user.description}
+                  key={user._id}
+                />
+              ))
             ) : (
               <ProfileCard noUser={true} />
             )}
