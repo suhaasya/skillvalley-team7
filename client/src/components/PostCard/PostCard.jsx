@@ -1,7 +1,8 @@
 import { Avatar } from "@mui/material";
 import React, { useState } from "react";
 import { GoKebabVertical } from "react-icons/go";
-import { MdOutlineInsertComment, MdOutlineThumbUp } from "react-icons/md";
+import { MdOutlineInsertComment } from "react-icons/md";
+import { RiThumbUpLine, RiBookmarkLine } from "react-icons/ri";
 import stringAvatar from "../../utils/stringAvatar";
 import "./PostCard.css";
 
@@ -52,10 +53,13 @@ export default function PostCard({
         </button>
         <div className="flex items-center ">
           <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
-            <MdOutlineThumbUp size={"1.25rem"} />
+            <RiThumbUpLine size={"1.25rem"} />
           </button>
           <p className="p-2 text-sm">{likes}</p>
         </div>
+        <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
+          <RiBookmarkLine size={"1.25rem"} />
+        </button>
       </div>
     </li>
   );
