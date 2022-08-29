@@ -64,3 +64,10 @@ export default function PostCard({
     </li>
   );
 }
+
+PostCard.defaultProps = {
+  authorName: "Unknown",
+  publishedDate: "date",
+  message: "nothing",
+  likes: 0,
+};

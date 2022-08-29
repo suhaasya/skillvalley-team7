@@ -17,7 +17,6 @@ function App() {
               key={post._id}
             />
           ))}
-
           <li className="mb-4 text-xs pb-4 text-center">
             That’s it so far. Hope you got some work inspiration from your
             network! :)
