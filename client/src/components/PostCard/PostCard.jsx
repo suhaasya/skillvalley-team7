@@ -1,4 +1,4 @@
-import { Avatar } from "@mui/material";
+import Avatar from "../Avatar";
 import React, { useState } from "react";
 import { GoKebabVertical } from "react-icons/go";
 import { MdOutlineInsertComment } from "react-icons/md";

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import { Avatar } from "@mui/material";
 import {
   RiLogoutBoxRLine,
   RiSettings5Line,
@@ -11,6 +10,7 @@ import ProfileCard from "./ProfileCard";
 import users from "../backend/db/users";
 import stringAvatar from "../utils/stringAvatar";
 import SearchBar from "./SearchBar";
+import Avatar from "./Avatar";
 
 export default function Navbar() {
   const [popUpMenu, setPopUpMenu] = useState(false);
@@ -92,7 +92,7 @@ export default function Navbar() {
             className="cursor-pointer hover:opacity-70"
             onClick={handleClick}
           >
-            <Avatar {...stringAvatar("Kent Dodds")} />
+            <Avatar {...stringAvatar("Suhas Khobragade")} />
           </button>
 
           {/* When Above Profile picture will be clicked this menu will be shown */}

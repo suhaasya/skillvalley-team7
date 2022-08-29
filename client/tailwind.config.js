@@ -18,5 +18,8 @@ module.exports = {
       red: "#EB5757",
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: false,
+  },
 };
