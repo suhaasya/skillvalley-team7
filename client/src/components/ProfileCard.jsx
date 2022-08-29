@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar from "@mui/material/Avatar";
+import Avatar from "./Avatar";
 import stringAvatar from "../utils/stringAvatar";
 
 export default function ProfileCard({ noUser, userName, userBio }) {

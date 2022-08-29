@@ -1,4 +1,8 @@
-## How to use Layout Component
+# Documentation
+
+## Layout Component
+
+### How to use Layout Component
 
 ```
 <Layout>
@@ -48,3 +52,19 @@ examples.
     code of profile page
 </Layout>
 ```
+
+## Input Component
+
+### How to use Layout Component
+
+```
+<Input />
+```
+
+Input component have 3 props
+
+- placeholder
+- onChange
+- type
+  - text (its default so don't need to assign)
+  - password
