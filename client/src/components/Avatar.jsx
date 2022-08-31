@@ -1,15 +1,24 @@
 import React from "react";
 
-export default function Avatar({ name, bgcolor }) {
+export default function Avatar({ name, bgcolor, type, imgSrc }) {
   const style = {
     backgroundColor: bgcolor,
   };
 
   return (
-    <div className="avatar placeholder">
-      <div className={`text-neutral-content rounded-full w-11`} style={style}>
-        <span className="text-2xl">{name}</span>
-      </div>
+    <div
+      className={`text-neutral-content rounded-full ${
+        type === "secondary" ? "w-44 h-44" : "w-11 h-11"
+      } flex items-center justify-center`}
+      style={style}
+    >
+      {imgSrc ? (
+        <img src={imgSrc} alt="Profile" className="rounded-full"></img>
+      ) : (
+        <span className={`${type === "secondary" ? "text-8xl" : "text-2xl"} `}>
+          {name}
+        </span>
+      )}
     </div>
   );
 }
@@ -17,4 +26,5 @@ export default function Avatar({ name, bgcolor }) {
 Avatar.defaultProps = {
   name: "Unknown",
   bgcolor: "#212121",
+  type: "primary",
 };
