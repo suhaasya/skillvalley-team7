@@ -19,7 +19,7 @@ export default function Input({
           {required && <span className="text-red"> *</span>}
         </p>
         <input
-          className="text-sm w-max"
+          className="text-sm w-full"
           name={name || placeholder.trim().replaceAll(" ", "")}
           type={showPassword ? "text" : "password"}
           value={value}
@@ -48,7 +48,7 @@ export default function Input({
         {placeholder} {required && <span className="text-red"> *</span>}
       </p>
       <input
-        className="text-sm"
+        className="text-sm w-full"
         value={value}
         onChange={(e) => onChange(e)}
         name={name || placeholder.trim().replaceAll(" ", "")}

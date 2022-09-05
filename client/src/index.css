@@ -170,6 +170,10 @@ textarea {
   margin-left: 1rem;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: "Inter", sans-serif;
   position: relative;

@@ -11,6 +11,8 @@ import users from "../backend/db/users";
 import stringAvatar from "../utils/stringAvatar";
 import SearchBar from "./SearchBar";
 import Avatar from "./Avatar";
+import Logo from "./Logo";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const [popUpMenu, setPopUpMenu] = useState(false);
@@ -54,7 +56,7 @@ export default function Navbar() {
       className="flex items-center px-[2%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
       onClick={closeMenu}
     >
-      <button className="logo">T7</button>
+      <Logo />
       <div className="ml-auto flex gap-[2.5%]">
         <div className="relative">
           <SearchBar
@@ -103,18 +105,24 @@ export default function Navbar() {
                 : "hidden"
             }
           >
-            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
-              <RiAccountCircleLine />
-              <p>Profile</p>
-            </li>
-            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
-              <RiSettings5Line />
-              <p>Settings</p>
-            </li>
-            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer text-red border-solid border-t-2 border-light_gray flex items-center gap-1">
-              <RiLogoutBoxRLine />
-              <p>Log out</p>
-            </li>
+            <Link to={"/profile"}>
+              <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
+                <RiAccountCircleLine />
+                <p>Profile</p>
+              </li>
+            </Link>
+            <Link to={"/settings"}>
+              <li className="hover:bg-dark_white py-2 px-4 cursor-pointer flex items-center gap-1">
+                <RiSettings5Line />
+                <p>Settings</p>
+              </li>
+            </Link>
+            <Link to={"/"}>
+              <li className="hover:bg-dark_white py-2 px-4 cursor-pointer text-red border-solid border-t-2 border-light_gray flex items-center gap-1">
+                <RiLogoutBoxRLine />
+                <p>Log out</p>
+              </li>
+            </Link>
           </ul>
         </div>
       </div>

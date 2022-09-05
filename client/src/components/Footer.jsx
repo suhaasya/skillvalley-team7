@@ -8,40 +8,51 @@ import {
   RiAccountCircleLine,
   RiAccountCircleFill,
 } from "react-icons/ri";
+import { Link } from "react-router-dom";
 import MenuItem from "./MenuItem";
 
 export default function Footer({ home, bookmarks, messages, profile }) {
   return (
     <div className="stickyBottomNav lg:hidden fixed left-0 bottom-0 w-full z-10 bg-dark_white text-center text-black">
       <ul className="flex justify-around ">
-        <MenuItem
-          name={"Home"}
-          icon={<AiOutlineHome />}
-          iconActive={<AiFillHome />}
-          condition={home}
-          secondary={true}
-        />
-        <MenuItem
-          name={"Bookmarks"}
-          icon={<RiBookmarkLine />}
-          iconActive={<RiBookmarkFill />}
-          condition={bookmarks}
-          secondary={true}
-        />
-        <MenuItem
-          name={"Messages"}
-          icon={<RiMessage2Line />}
-          iconActive={<RiMessage2Fill />}
-          condition={messages}
-          secondary={true}
-        />
-        <MenuItem
-          name={"Profile"}
-          icon={<RiAccountCircleLine />}
-          iconActive={<RiAccountCircleFill />}
-          condition={profile}
-          secondary={true}
-        />
+        <Link to="/home">
+          <MenuItem
+            name={"Home"}
+            icon={<AiOutlineHome />}
+            iconActive={<AiFillHome />}
+            condition={home}
+            secondary={true}
+          />
+        </Link>
+
+        <Link to="/bookmarks">
+          <MenuItem
+            name={"Bookmarks"}
+            icon={<RiBookmarkLine />}
+            iconActive={<RiBookmarkFill />}
+            condition={bookmarks}
+            secondary={true}
+          />
+        </Link>
+
+        <Link to="/messages">
+          <MenuItem
+            name={"Messages"}
+            icon={<RiMessage2Line />}
+            iconActive={<RiMessage2Fill />}
+            condition={messages}
+            secondary={true}
+          />
+        </Link>
+        <Link to={"/profile"}>
+          <MenuItem
+            name={"Profile"}
+            icon={<RiAccountCircleLine />}
+            iconActive={<RiAccountCircleFill />}
+            condition={profile}
+            secondary={true}
+          />
+        </Link>
       </ul>
     </div>
   );
