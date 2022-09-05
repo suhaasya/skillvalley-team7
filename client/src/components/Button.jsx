@@ -1,10 +1,14 @@
 import React from "react";
 
-export default function Button({ children, type, onClick }) {
+export default function Button({ children, type, onClick, size }) {
   return (
     <button
-      className={`mt-4 text-xs font-medium ${
-        type === "secondary" ? "bg-red" : "bg-black"
+      className={`${size === "medium" ? " " : "mt-4 text-xs"} font-medium ${
+        type === "secondary"
+          ? "bg-red"
+          : type === "success"
+          ? "bg-green"
+          : "bg-black"
       } text-white px-3 py-1 rounded`}
       onClick={onClick}
     >
@@ -15,5 +19,6 @@ export default function Button({ children, type, onClick }) {
 
 Button.defaultProps = {
   type: "primary",
+  size: "small",
   onClick: () => {},
 };
