@@ -3,7 +3,7 @@ import { RiSearchLine, RiCloseLine } from "react-icons/ri";
 
 export default function SearchBar({ onChange, value, setValue }) {
   return (
-    <div className="flex items-center border-solid border-2 border-light_gray p-2 w-60 sm:w-80 rounded-md">
+    <div className="flex items-center border-solid border-2 border-light_gray p-2 w-60 sm:w-80 rounded-md ">
       <div className="text-gray">
         <RiSearchLine />
       </div>
