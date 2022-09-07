@@ -2,10 +2,41 @@ import React from "react";
 import Layout from "../components/Layout";
 import PostCard from "../components/PostCard/PostCard";
 import posts from "../backend/db/posts";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import { useState } from "react";
 
 export default function HomePage() {
+  const [post, setPost] = useState("");
+
+  function handleChange(e) {
+    setPost(e.target.value);
+  }
+
+  function sharePost(e) {
+    e.preventDefault();
+    setPost("");
+  }
+
   return (
     <Layout home={true}>
+      <form
+        className=" px-2 md:px-24 py-8 bg-dark_white border-solid border-b-2 border-light_gray"
+        onSubmit={sharePost}
+      >
+        <Input
+          type={"textarea"}
+          placeholder="Write a post"
+          name="post"
+          value={post}
+          onChange={handleChange}
+        />
+        <div className="text-right mt-4">
+          <Button type="success" size={"medium"}>
+            Share
+          </Button>
+        </div>
+      </form>
       <ul className="md:px-24 py-2">
         {posts.map((post) => (
           <PostCard

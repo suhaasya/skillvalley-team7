@@ -18,7 +18,7 @@ export default function PostCard({
   }
 
   return (
-    <li className="border-solid border-b-2 border-light_gray mb-4 cursor-pointer">
+    <li className="py-2 px-2 md:px-0 sm:py-8 border-solid border-b-2 border-light_gray mb-4 cursor-pointer">
       <div className="flex items-center">
         <Avatar {...stringAvatar(authorName)} />
         <div className="ml-2">

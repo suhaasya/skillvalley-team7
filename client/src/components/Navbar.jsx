@@ -101,7 +101,7 @@ export default function Navbar() {
           <ul
             className={
               popUpMenu
-                ? "absolute border-solid border-2 rounded-lg py-1 bg-white right-1 top-12"
+                ? "absolute border-solid border-2 rounded-lg py-1 bg-white right-1 top-12 z-10"
                 : "hidden"
             }
           >

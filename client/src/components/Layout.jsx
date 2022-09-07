@@ -20,7 +20,7 @@ export default function Layout({
           messages={messages}
           profile={profile}
         />
-        <section className="bg-white w-full px-[2%] lg:w-4/5 border-solid border-x-2 border-light_gray overflow-y-scroll pb-16">
+        <section className="bg-white w-full lg:w-4/5 border-solid border-x-2 border-light_gray overflow-y-scroll pb-16">
           {children}
         </section>
       </main>
