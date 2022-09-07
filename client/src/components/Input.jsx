@@ -12,7 +12,7 @@ export default function Input({
   const [showPassword, setShowPassword] = useState(false);
 
   return type === "password" ? (
-    <div className="border-2 border-solid p-2  rounded-md border-gray flex items-center justify-between ">
+    <div className="border-2 border-solid p-2  rounded-md border-gray flex items-center justify-between bg-white">
       <div>
         <p className="text-xs text-gray">
           {placeholder}
@@ -31,7 +31,7 @@ export default function Input({
       </button>
     </div>
   ) : type === "textarea" ? (
-    <div className="border-2 border-solid p-2  rounded-md border-gray">
+    <div className="border-2 border-solid p-2  rounded-md border-gray bg-white">
       <p className="text-xs text-gray">
         {placeholder} {required && <span className="text-red"> *</span>}
       </p>
@@ -43,7 +43,7 @@ export default function Input({
       />
     </div>
   ) : (
-    <div className="border-2 border-solid p-2  rounded-md border-gray">
+    <div className="border-2 border-solid p-2  rounded-md border-gray bg-white">
       <p className="text-xs text-gray">
         {placeholder} {required && <span className="text-red"> *</span>}
       </p>
