@@ -13,8 +13,13 @@ export default function SignupPage() {
     const { name, value } = e.target;
     setSignupData((prev) => ({ ...prev, [name]: value }));
   }
+
+  function onSubmit(e) {
+    e.preventDefault();
+  }
+
   return (
-    <FormContainer>
+    <FormContainer onSubmit={onSubmit}>
       <h3 className="text-center text-2xl font-medium">Join Scream-One</h3>
       <GoogleSignUpButton />
       <p className="text-center">or</p>
