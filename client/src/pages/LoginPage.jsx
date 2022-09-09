@@ -18,8 +18,12 @@ export default function LoginPage() {
     setLoginData((prev) => ({ ...prev, [name]: value }));
   }
 
+  function onSubmit(e) {
+    e.preventDefault();
+  }
+
   return (
-    <FormContainer>
+    <FormContainer onSubmit={onSubmit}>
       <div className="flex items-center justify-center">
         <h3 className="text-2xl font-medium">Login to Scream-One</h3>
         <FcLock size={"1.5rem"} />
