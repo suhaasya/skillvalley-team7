@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { RiEyeLine, RiEyeOffLine } from "react-icons/ri";
 
 export default function Input({
-  placeholder,
+  label,
   type,
   onChange,
   required,
   name,
   value,
+  placeholder,
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -15,12 +16,13 @@ export default function Input({
     <div className="border-2 border-solid p-2  rounded-md border-gray flex items-center justify-between bg-white">
       <div>
         <p className="text-xs text-gray">
-          {placeholder}
+          {label}
           {required && <span className="text-red"> *</span>}
         </p>
         <input
           className="text-sm w-full"
-          name={name || placeholder.trim().replaceAll(" ", "")}
+          placeholder={placeholder && placeholder}
+          name={name || label.trim().replaceAll(" ", "")}
           type={showPassword ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e)}
@@ -33,32 +35,34 @@ export default function Input({
   ) : type === "textarea" ? (
     <div className="border-2 border-solid p-2  rounded-md border-gray bg-white">
       <p className="text-xs text-gray">
-        {placeholder} {required && <span className="text-red"> *</span>}
+        {label} {required && <span className="text-red"> *</span>}
       </p>
       <textarea
         className="text-sm w-full"
+        placeholder={placeholder && placeholder}
         value={value}
         onChange={(e) => onChange(e)}
-        name={name || placeholder.trim().replaceAll(" ", "")}
+        name={name || label.trim().replaceAll(" ", "")}
       />
     </div>
   ) : (
     <div className="border-2 border-solid p-2  rounded-md border-gray bg-white">
       <p className="text-xs text-gray">
-        {placeholder} {required && <span className="text-red"> *</span>}
+        {label} {required && <span className="text-red"> *</span>}
       </p>
       <input
         className="text-sm w-full"
+        placeholder={placeholder && placeholder}
         value={value}
         onChange={(e) => onChange(e)}
-        name={name || placeholder.trim().replaceAll(" ", "")}
+        name={name || label.trim().replaceAll(" ", "")}
       />
     </div>
   );
 }
 
 Input.defaultProps = {
-  placeholder: "Enter the value: ",
+  label: "Enter the value: ",
   type: "text",
   onChange: () => {},
   required: false,

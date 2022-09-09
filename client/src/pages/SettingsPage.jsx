@@ -32,13 +32,13 @@ export default function SettingsPage() {
         <SettingsCard title={"Basic Profile"} onSubmit={handleSubmit}>
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <Input
-              placeholder={"First Name"}
+              label={"First Name"}
               required={true}
               value={basicSettings.FirstName}
               onChange={handleChange}
             />
             <Input
-              placeholder={"Last Name"}
+              label={"Last Name"}
               required={true}
               value={basicSettings.LastName}
               onChange={handleChange}
@@ -46,7 +46,7 @@ export default function SettingsPage() {
             <div className="col-span-2">
               <Input
                 type="textarea"
-                placeholder={"Brief bio"}
+                label={"Brief bio"}
                 required={true}
                 value={basicSettings.Briefbio}
                 onChange={handleChange}
@@ -62,7 +62,7 @@ export default function SettingsPage() {
         <SettingsCard title={"Change Password"}>
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <Input
-              placeholder={"Current Password"}
+              label={"Current Password"}
               required={true}
               type={"password"}
               onChange={handleChange}
@@ -70,14 +70,14 @@ export default function SettingsPage() {
             />
             <div></div>
             <Input
-              placeholder={"New Password"}
+              label={"New Password"}
               type={"password"}
               required={true}
               onChange={handleChange}
               value={passwordSettings.NewPassword}
             />
             <Input
-              placeholder={"Confirm New Password"}
+              label={"Confirm New Password"}
               type={"password"}
               required={true}
               onChange={handleChange}
