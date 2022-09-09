@@ -26,7 +26,7 @@ export default function HomePage() {
       >
         <Input
           type={"textarea"}
-          placeholder="Write a post"
+          label="Write a post"
           name="post"
           value={post}
           onChange={handleChange}
