@@ -1,12 +1,16 @@
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import FormContainer from "../components/FormContainer";
 import GoogleSignUpButton from "../components/GoogleSignUpButton";
 import Input from "../components/Input";
 
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 export default function SignupPage() {
+  const auth = getAuth();
+  const navigate = useNavigate();
   const [signupData, setSignupData] = useState({ email: "", password: "" });
 
   function handleChange(e) {
@@ -16,6 +20,19 @@ export default function SignupPage() {
 
   function onSubmit(e) {
     e.preventDefault();
+    console.log("suhas");
+
+    createUserWithEmailAndPassword(auth, signupData.email, signupData.password)
+      .then((userCredential) => {
+        navigate("/welcome");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(`${errorCode} ${errorMessage}`);
+      });
+
+    setSignupData({ email: "", password: "" });
   }
 
   return (

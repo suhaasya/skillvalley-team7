@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { FcLock } from "react-icons/fc";
@@ -7,7 +7,12 @@ import GoogleSignUpButton from "../components/GoogleSignUpButton";
 import FormContainer from "../components/FormContainer";
 import { useState } from "react";
 
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
 export default function LoginPage() {
+  const auth = getAuth();
+  const navigate = useNavigate();
+
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -20,6 +25,15 @@ export default function LoginPage() {
 
   function onSubmit(e) {
     e.preventDefault();
+    signInWithEmailAndPassword(auth, loginData.email, loginData.password)
+      .then((userCredential) => {
+        navigate("/home");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(`${errorCode} ${errorMessage}`);
+      });
   }
 
   return (

@@ -6,7 +6,7 @@ export default function FormContainer({ children, onSubmit }) {
       <section className="container max-w-screen-sm mx-auto h-4/5 p-[1%] sm:px-[5%]">
         <form
           className="flex flex-col gap-8 border-solid border-2 border-black p-8 rounded bg-white"
-          onSubmit={onSubmit}
+          onSubmit={(e) => onSubmit(e)}
         >
           {children}
         </form>

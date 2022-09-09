@@ -28,9 +28,12 @@ export default function Input({
           onChange={(e) => onChange(e)}
         />
       </div>
-      <button onClick={() => setShowPassword((prev) => !prev)}>
+      <div
+        onClick={() => setShowPassword((prev) => !prev)}
+        className="cursor-pointer"
+      >
         {showPassword ? <RiEyeLine /> : <RiEyeOffLine />}
-      </button>
+      </div>
     </div>
   ) : type === "textarea" ? (
     <div className="border-2 border-solid p-2  rounded-md border-gray bg-white">
