@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getAuth, signOut } from "firebase/auth";
 
 import {
   RiLogoutBoxRLine,
@@ -12,9 +13,12 @@ import stringAvatar from "../utils/stringAvatar";
 import SearchBar from "./SearchBar";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+  const auth = getAuth();
+  const navigate = useNavigate();
+
   const [popUpMenu, setPopUpMenu] = useState(false);
   const [searchResult, setSearchResult] = useState(false);
   const [userData, setUserData] = useState(users);
@@ -49,6 +53,19 @@ export default function Navbar() {
   function closeMenu() {
     popUpMenu && setPopUpMenu(false);
     searchResult && setSearchResult(false);
+  }
+
+  function logout() {
+    signOut(auth)
+      .then(() => {
+        console.log("bye bye");
+        navigate("/");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(`${errorCode} ${errorMessage}`);
+      });
   }
 
   return (
@@ -117,12 +134,14 @@ export default function Navbar() {
                 <p>Settings</p>
               </li>
             </Link>
-            <Link to={"/"}>
-              <li className="hover:bg-dark_white py-2 px-4 cursor-pointer text-red border-solid border-t-2 border-light_gray flex items-center gap-1">
-                <RiLogoutBoxRLine />
-                <p>Log out</p>
-              </li>
-            </Link>
+
+            <li
+              className="hover:bg-dark_white py-2 px-4 text-red border-solid border-t-2 border-light_gray flex items-center gap-1 cursor-pointer"
+              onClick={logout}
+            >
+              <RiLogoutBoxRLine />
+              <p>Log out</p>
+            </li>
           </ul>
         </div>
       </div>

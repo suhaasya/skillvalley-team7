@@ -1,23 +1,78 @@
 import React from "react";
 import Layout from "../components/Layout";
 import PostCard from "../components/PostCard/PostCard";
-import posts from "../backend/db/posts";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useState } from "react";
+import { v4 as uuid } from "uuid";
+import getDate from "../utils/getDate";
+import { getAuth } from "firebase/auth";
+import { useEffect } from "react";
+import { getDoc, setDoc, doc, getDocs, collection } from "firebase/firestore";
+import { db } from "../firebase.config";
+import Spinner from "../components/Spinner";
 
 export default function HomePage() {
+  const auth = getAuth();
+  const [user, setUser] = useState(null);
+  const [postsData, setPostsData] = useState(null);
   const [post, setPost] = useState("");
+  const [loading, setLoading] = useState(true);
+  const currentUser = auth.currentUser?.uid;
 
   function handleChange(e) {
     setPost(e.target.value);
   }
 
-  function sharePost(e) {
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const docRef = doc(db, "users", currentUser);
+      const docSnap = await getDoc(docRef);
+
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      const posts = [];
+      querySnapshot.forEach((doc) => {
+        posts.push({ _id: doc.id, ...doc.data() });
+      });
+      setPostsData(posts);
+
+      if (docSnap.exists()) {
+        setUser(docSnap.data());
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  });
+
+  async function sharePost(e) {
     e.preventDefault();
-    setPost("");
+    try {
+      const postData = {
+        user: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          uid: user.useruid,
+        },
+        post: {
+          message: post,
+
+          likes: 0,
+          date: getDate(),
+        },
+      };
+      await setDoc(doc(db, "posts", uuid()), postData);
+      setPost("");
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error(`${errorCode} ${errorMessage}`);
+    }
   }
 
+  if (loading) {
+    return <Spinner />;
+  }
   return (
     <Layout home={true}>
       <form
@@ -38,7 +93,7 @@ export default function HomePage() {
         </div>
       </form>
       <ul className="md:px-24 py-2">
-        {posts.map((post) => (
+        {postsData.map((post) => (
           <PostCard
             authorName={`${post.user.firstName} ${post.user.lastName}`}
             publishedDate={post.post.date}

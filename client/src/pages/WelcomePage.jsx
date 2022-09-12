@@ -3,8 +3,15 @@ import { useState } from "react";
 import Button from "../components/Button";
 import FormContainer from "../components/FormContainer";
 import Input from "../components/Input";
+import { getAuth, updateProfile } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
+import { db } from "../firebase.config";
+import { useNavigate } from "react-router-dom";
 
 export default function WelcomePage() {
+  const auth = getAuth();
+  const navigate = useNavigate();
+
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -16,8 +23,34 @@ export default function WelcomePage() {
     setUserData((prev) => ({ ...prev, [name]: value }));
   }
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
+
+    try {
+      updateProfile(auth.currentUser, {
+        displayName: `${userData.firstName}${userData.lastName}`,
+      });
+
+      const userDataCopy = {
+        ...userData,
+        email: auth.currentUser.email,
+        useruid: auth.currentUser.uid,
+      };
+
+      await setDoc(doc(db, "users", auth.currentUser.uid), userDataCopy);
+
+      setUserData({
+        firstName: "",
+        lastName: "",
+        briefBio: "",
+      });
+
+      navigate("/home");
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error(`${errorCode} ${errorMessage}`);
+    }
   }
 
   return (
