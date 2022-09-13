@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getAuth, signOut } from "firebase/auth";
 
 import {
@@ -8,12 +8,14 @@ import {
 } from "react-icons/ri";
 
 import ProfileCard from "./ProfileCard";
-import users from "../backend/db/users";
 import stringAvatar from "../utils/stringAvatar";
 import SearchBar from "./SearchBar";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
 import { Link, useNavigate } from "react-router-dom";
+import Spinner from "./Spinner";
+import { db } from "../firebase.config";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 export default function Navbar() {
   const auth = getAuth();
@@ -21,8 +23,33 @@ export default function Navbar() {
 
   const [popUpMenu, setPopUpMenu] = useState(false);
   const [searchResult, setSearchResult] = useState(false);
-  const [userData, setUserData] = useState(users);
+  const [user, setUser] = useState(null);
+  const [users, setUsers] = useState(null);
+  const [searchUsers, setSearchUsers] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+
+  useEffect(() => {
+    async function fetchData() {
+      // User Data
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        setUser(userSnap.data());
+      }
+
+      // User Post Data
+      const usersSnap = await getDocs(collection(db, "users"));
+      const users = [];
+      usersSnap.forEach((doc) => {
+        users.push({ _id: doc.id, ...doc.data() });
+      });
+      setUsers(users);
+      setSearchUsers(users);
+      setLoading(false);
+    }
+    fetchData();
+  }, [auth.currentUser.uid]);
 
   function handleChange(e) {
     setPopUpMenu(false);
@@ -31,17 +58,17 @@ export default function Navbar() {
 
     if (value.length > 0) {
       setSearchResult(true);
-      setUserData((prev) =>
-        prev.filter((item) =>
+      setSearchUsers((prev) => {
+        return prev.filter((item) =>
           `${item.firstName} ${item.lastName}`
             .toLowerCase()
             .includes(searchValue)
-        )
-      );
+        );
+      });
     } else {
       setSearchResult(false);
       setSearchValue("");
-      setUserData(users);
+      setSearchUsers(users);
     }
   }
 
@@ -68,6 +95,9 @@ export default function Navbar() {
       });
   }
 
+  if (loading) {
+    return <Spinner />;
+  }
   return (
     <nav
       className="flex items-center px-[2%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
@@ -92,12 +122,12 @@ export default function Navbar() {
             Profile Card shown in search result
             */}
 
-            {userData.length > 0 ? (
-              userData.map((user) => (
+            {searchUsers.length > 0 ? (
+              searchUsers.map((user, i) => (
                 <ProfileCard
-                  userName={`${user.firstName} ${user.lastName}`}
+                  userName={`${user.firstName.trim()} ${user.lastName.trim()}`}
                   userBio={user.description}
-                  key={user._id}
+                  key={i}
                 />
               ))
             ) : (
@@ -111,7 +141,11 @@ export default function Navbar() {
             className="cursor-pointer hover:opacity-70"
             onClick={handleClick}
           >
-            <Avatar {...stringAvatar("Suhas Khobragade")} />
+            <Avatar
+              {...stringAvatar(
+                `${user?.firstName.trim()} ${user?.lastName.trim()}`
+              )}
+            />
           </button>
 
           {/* When Above Profile picture will be clicked this menu will be shown */}
