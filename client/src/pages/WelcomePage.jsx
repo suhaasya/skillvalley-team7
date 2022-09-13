@@ -34,7 +34,6 @@ export default function WelcomePage() {
       const userDataCopy = {
         ...userData,
         email: auth.currentUser.email,
-        useruid: auth.currentUser.uid,
       };
 
       await setDoc(doc(db, "users", auth.currentUser.uid), userDataCopy);

@@ -24,7 +24,7 @@ export default function Avatar({ name, bgcolor, type, imgSrc }) {
 }
 
 Avatar.defaultProps = {
-  name: "Unknown",
+  name: "UU",
   bgcolor: "#212121",
   type: "primary",
 };

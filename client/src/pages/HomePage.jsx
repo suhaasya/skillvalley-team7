@@ -18,32 +18,32 @@ export default function HomePage() {
   const [postsData, setPostsData] = useState(null);
   const [post, setPost] = useState("");
   const [loading, setLoading] = useState(true);
-  const currentUser = auth.currentUser?.uid;
 
   function handleChange(e) {
     setPost(e.target.value);
   }
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const docRef = doc(db, "users", currentUser);
-      const docSnap = await getDoc(docRef);
+    async function fetchData() {
+      // User Data
+      const userRef = doc(db, "users", auth.currentUser?.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        setUser(userSnap.data());
+      }
 
-      const querySnapshot = await getDocs(collection(db, "posts"));
+      // User Post Data
+      const postSnap = await getDocs(collection(db, "posts"));
       const posts = [];
-      querySnapshot.forEach((doc) => {
+      postSnap.forEach((doc) => {
         posts.push({ _id: doc.id, ...doc.data() });
       });
       setPostsData(posts);
 
-      if (docSnap.exists()) {
-        setUser(docSnap.data());
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  });
+      setLoading(false);
+    }
+    setTimeout(fetchData, 1000);
+  }, [auth.currentUser?.uid]);
 
   async function sharePost(e) {
     e.preventDefault();
