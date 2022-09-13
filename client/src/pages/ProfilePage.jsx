@@ -39,8 +39,6 @@ export default function ProfilePage() {
     }
     fetchData();
   }, [auth.currentUser.uid]);
-  console.log(userData);
-  console.log(postsData);
 
   if (loading) {
     return <Spinner />;
