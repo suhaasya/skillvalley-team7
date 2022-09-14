@@ -100,7 +100,7 @@ export default function Navbar() {
   }
   return (
     <nav
-      className="flex items-center px-[2%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
+      className="flex items-center px-[3%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
       onClick={closeMenu}
     >
       <Logo />
