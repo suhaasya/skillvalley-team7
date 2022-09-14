@@ -2,19 +2,63 @@ import Avatar from "../Avatar";
 import React, { useState } from "react";
 import { GoKebabVertical } from "react-icons/go";
 import { MdOutlineInsertComment } from "react-icons/md";
-import { RiThumbUpLine, RiBookmarkLine } from "react-icons/ri";
+import { RiThumbUpLine, RiBookmarkLine, RiBookmarkFill } from "react-icons/ri";
 import stringAvatar from "../../utils/stringAvatar";
 import "./PostCard.css";
+import {
+  doc,
+  deleteDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
+import { db } from "../../firebase.config";
+import { useEffect } from "react";
 
 export default function PostCard({
   authorName,
+  showDelete,
+  id,
   publishedDate,
   message,
+  setLoading,
   likes,
+  currentUser,
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [bookmarked, setBookmarked] = useState(
+    currentUser.bookmarks.includes(id)
+  );
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
+  }
+
+  useEffect(() => {
+    async function bookmarkPost() {
+      try {
+        const userRef = doc(db, "users", currentUser._id);
+
+        if (bookmarked) {
+          await updateDoc(userRef, {
+            bookmarks: arrayUnion(id),
+          });
+        } else {
+          await updateDoc(userRef, {
+            bookmarks: arrayRemove(id),
+          });
+        }
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
+    bookmarkPost();
+  }, [currentUser._id, id, bookmarked]);
+
+  async function deletePost() {
+    setLoading(true);
+    const postRef = doc(db, "posts", id);
+    await deleteDoc(postRef);
+    setLoading(false);
   }
 
   return (
@@ -37,10 +81,15 @@ export default function PostCard({
                 : "hidden"
             }
           >
-            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer">
-              Delete
-            </li>
-            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer">
+            {showDelete && (
+              <li
+                className="hover:bg-dark_white py-2 px-4 cursor-pointer w-full"
+                onClick={deletePost}
+              >
+                Delete
+              </li>
+            )}
+            <li className="hover:bg-dark_white py-2 px-4 cursor-pointer w-full">
               Copy url
             </li>
           </ul>
@@ -57,8 +106,19 @@ export default function PostCard({
           </button>
           <p className="p-2 text-sm">{likes}</p>
         </div>
-        <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
-          <RiBookmarkLine size={"1.25rem"} />
+        <button
+          className="p-2 rounded-3xl hover:bg-light_green hover:text-green"
+          onClick={() => {
+            setBookmarked((prev) => !prev);
+          }}
+        >
+          {bookmarked ? (
+            <div className="text-green">
+              <RiBookmarkFill size={"1.25rem"} />
+            </div>
+          ) : (
+            <RiBookmarkLine size={"1.25rem"} />
+          )}
         </button>
       </div>
     </li>

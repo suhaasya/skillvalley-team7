@@ -8,7 +8,15 @@ import { v4 as uuid } from "uuid";
 import getDate from "../utils/getDate";
 import { getAuth } from "firebase/auth";
 import { useEffect } from "react";
-import { getDoc, setDoc, doc, getDocs, collection } from "firebase/firestore";
+import {
+  getDoc,
+  setDoc,
+  doc,
+  getDocs,
+  collection,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
 
@@ -28,12 +36,14 @@ export default function HomePage() {
       // User Data
       const userRef = doc(db, "users", auth.currentUser?.uid);
       const userSnap = await getDoc(userRef);
+
       if (userSnap.exists()) {
-        setUser(userSnap.data());
+        setUser({ _id: userSnap.id, ...userSnap.data() });
       }
 
       // User Post Data
-      const postSnap = await getDocs(collection(db, "posts"));
+      const q = query(collection(db, "posts"), orderBy("post", "desc"));
+      const postSnap = await getDocs(q);
       const posts = [];
       postSnap.forEach((doc) => {
         posts.push({ _id: doc.id, ...doc.data() });
@@ -43,16 +53,17 @@ export default function HomePage() {
       setLoading(false);
     }
     setTimeout(fetchData, 1000);
-  }, [auth.currentUser?.uid]);
+  }, [auth.currentUser?.uid, loading]);
 
   async function sharePost(e) {
     e.preventDefault();
+    setLoading(true);
     try {
       const postData = {
         user: {
           firstName: user.firstName,
           lastName: user.lastName,
-          uid: user.useruid,
+          uid: user._id,
         },
         post: {
           message: post,
@@ -63,10 +74,12 @@ export default function HomePage() {
       };
       await setDoc(doc(db, "posts", uuid()), postData);
       setPost("");
+      setLoading(false);
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.error(`${errorCode} ${errorMessage}`);
+      setLoading(false);
     }
   }
 
@@ -83,6 +96,7 @@ export default function HomePage() {
           type={"textarea"}
           label="Write a post"
           name="post"
+          row={"4"}
           value={post}
           onChange={handleChange}
         />
@@ -95,11 +109,15 @@ export default function HomePage() {
       <ul className="md:px-24 py-2">
         {postsData.map((post) => (
           <PostCard
-            authorName={`${post.user.firstName} ${post.user.lastName}`}
+            authorName={`${post.user.firstName.trim()} ${post.user.lastName.trim()}`}
             publishedDate={post.post.date}
             message={post.post.message}
             likes={post.post.likes}
+            id={post._id}
             key={post._id}
+            setLoading={setLoading}
+            showDelete={user._id === post.user.uid}
+            currentUser={user}
           />
         ))}
         <li className="mb-4 text-xs pb-4 text-center">

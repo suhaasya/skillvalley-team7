@@ -22,7 +22,7 @@ export default function ProfilePage() {
       const userRef = doc(db, "users", auth.currentUser.uid);
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
-        setUserData(userSnap.data());
+        setUserData({ _id: userSnap.id, ...userSnap.data() });
       }
 
       // User Post Data
@@ -38,7 +38,7 @@ export default function ProfilePage() {
       setLoading(false);
     }
     fetchData();
-  }, [auth.currentUser.uid]);
+  }, [auth.currentUser.uid, loading]);
 
   if (loading) {
     return <Spinner />;
@@ -76,11 +76,15 @@ export default function ProfilePage() {
         <ul className="md:px-24 py-2">
           {postsData.map((post) => (
             <PostCard
-              authorName={`${post.user.firstName} ${post.user.lastName}`}
+              authorName={`${post.user.firstName.trim()} ${post.user.lastName.trim()}`}
               publishedDate={post.post.date}
               message={post.post.message}
               likes={post.post.likes}
+              id={post._id}
               key={post._id}
+              setLoading={setLoading}
+              showDelete={userData._id === post.user.uid}
+              currentUser={userData}
             />
           ))}
           <li className="mb-4 text-xs pb-4 text-center">

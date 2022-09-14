@@ -7,6 +7,7 @@ export default function Input({
   onChange,
   required,
   name,
+  row,
   value,
   placeholder,
 }) {
@@ -42,6 +43,8 @@ export default function Input({
       </p>
       <textarea
         className="text-sm w-full"
+        maxLength={"280"}
+        row={row}
         placeholder={placeholder && placeholder}
         value={value}
         onChange={(e) => onChange(e)}
@@ -70,4 +73,5 @@ Input.defaultProps = {
   onChange: () => {},
   required: false,
   value: "",
+  row: "2",
 };

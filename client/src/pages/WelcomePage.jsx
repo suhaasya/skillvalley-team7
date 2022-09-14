@@ -33,6 +33,7 @@ export default function WelcomePage() {
 
       const userDataCopy = {
         ...userData,
+        bookmarks: [],
         email: auth.currentUser.email,
       };
 
