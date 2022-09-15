@@ -15,6 +15,7 @@ export default function BookmarksPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [postsData, setPostsData] = useState(null);
+  const [changeState, setChangeState] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +39,7 @@ export default function BookmarksPage() {
     }
 
     setTimeout(fetchData, 1000);
-  }, [auth.currentUser.uid, user]);
+  }, [auth.currentUser.uid, user, changeState]);
 
   if (loading) {
     return <Spinner />;
@@ -57,7 +58,7 @@ export default function BookmarksPage() {
               likes={post.post.likes}
               id={post._id}
               key={post._id}
-              setLoading={setLoading}
+              setChangeState={setChangeState}
               showDelete={user._id === post.user.uid}
               currentUser={user}
             />

@@ -25,6 +25,7 @@ export default function HomePage() {
   const [user, setUser] = useState(null);
   const [postsData, setPostsData] = useState(null);
   const [post, setPost] = useState("");
+  const [changeState, setChangeState] = useState(false);
   const [loading, setLoading] = useState(true);
 
   function handleChange(e) {
@@ -53,11 +54,11 @@ export default function HomePage() {
       setLoading(false);
     }
     setTimeout(fetchData, 1000);
-  }, [auth.currentUser?.uid, loading]);
+  }, [auth.currentUser?.uid, loading, changeState]);
 
   async function sharePost(e) {
     e.preventDefault();
-    setLoading(true);
+    setChangeState(true);
     try {
       const postData = {
         user: {
@@ -74,12 +75,12 @@ export default function HomePage() {
       };
       await setDoc(doc(db, "posts", uuid()), postData);
       setPost("");
-      setLoading(false);
+      setChangeState(false);
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.error(`${errorCode} ${errorMessage}`);
-      setLoading(false);
+      setChangeState(false);
     }
   }
 
@@ -115,7 +116,7 @@ export default function HomePage() {
             likes={post.post.likes}
             id={post._id}
             key={post._id}
-            setLoading={setLoading}
+            setChangeState={setChangeState}
             showDelete={user._id === post.user.uid}
             currentUser={user}
           />
