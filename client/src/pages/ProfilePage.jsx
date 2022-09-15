@@ -15,6 +15,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [postsData, setPostsData] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [changeState, setChangeState] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -38,7 +39,7 @@ export default function ProfilePage() {
       setLoading(false);
     }
     fetchData();
-  }, [auth.currentUser.uid, loading]);
+  }, [auth.currentUser.uid, loading, changeState]);
 
   if (loading) {
     return <Spinner />;
@@ -82,7 +83,7 @@ export default function ProfilePage() {
               likes={post.post.likes}
               id={post._id}
               key={post._id}
-              setLoading={setLoading}
+              setChangeState={setChangeState}
               showDelete={userData._id === post.user.uid}
               currentUser={userData}
             />

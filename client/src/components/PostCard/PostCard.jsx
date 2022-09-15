@@ -21,7 +21,7 @@ export default function PostCard({
   id,
   publishedDate,
   message,
-  setLoading,
+  setChangeState,
   likes,
   currentUser,
 }) {
@@ -55,10 +55,10 @@ export default function PostCard({
   }, [currentUser._id, id, bookmarked]);
 
   async function deletePost() {
-    setLoading(true);
+    setChangeState(true);
     const postRef = doc(db, "posts", id);
     await deleteDoc(postRef);
-    setLoading(false);
+    setChangeState(false);
   }
 
   return (
