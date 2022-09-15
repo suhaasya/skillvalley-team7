@@ -4,12 +4,16 @@ import SettingsCard from "../components/SettingsCard";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useState } from "react";
-import userData from "../backend/db/userData";
+import { getAuth } from "firebase/auth";
+import { useEffect } from "react";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase.config";
+import Spinner from "../components/Spinner";
 
 export default function SettingsPage() {
-  const [basicSettings, setBasicSettings] = useState({
-    ...userData,
-  });
+  const auth = getAuth();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [passwordSettings, setPasswordSettings] = useState({
     CurrentPassword: "",
@@ -17,15 +21,38 @@ export default function SettingsPage() {
     ConfirmNewPassword: "",
   });
 
+  useEffect(() => {
+    async function fetchData() {
+      // User Data
+      const userRef = doc(db, "users", auth.currentUser?.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        setUser({ _id: userSnap.id, ...userSnap.data() });
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, [auth.currentUser?.uid]);
+
   function handleChange(e) {
     const { name, value } = e.target;
-    setBasicSettings((prev) => ({ ...prev, [name]: value }));
+    setUser((prev) => ({ ...prev, [name]: value }));
     setPasswordSettings((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    const userRef = doc(db, "users", auth.currentUser?.uid);
+    setLoading(true);
+    await updateDoc(userRef, { ...user });
+    setLoading(false);
   }
+
+  if (loading) {
+    return <Spinner />;
+  }
+
   return (
     <Layout>
       <section className="px-[2%] py-4 flex flex-col gap-4">
@@ -34,21 +61,24 @@ export default function SettingsPage() {
             <Input
               label={"First Name"}
               required={true}
-              value={basicSettings.FirstName}
+              name={"firstName"}
+              value={user.firstName}
               onChange={handleChange}
             />
             <Input
               label={"Last Name"}
               required={true}
-              value={basicSettings.LastName}
+              name={"lastName"}
+              value={user.lastName}
               onChange={handleChange}
             />
             <div className="col-span-2">
               <Input
                 type="textarea"
                 label={"Brief bio"}
+                name={"briefBio"}
                 required={true}
-                value={basicSettings.Briefbio}
+                value={user.briefBio}
                 onChange={handleChange}
               />
               <p className="text-xs m-1 text-gray">

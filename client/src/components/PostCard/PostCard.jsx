@@ -56,6 +56,12 @@ export default function PostCard({
 
   async function deletePost() {
     setChangeState(true);
+    const userRef = doc(db, "users", currentUser._id);
+    if (bookmarked) {
+      await updateDoc(userRef, {
+        bookmarks: arrayRemove(id),
+      });
+    }
     const postRef = doc(db, "posts", id);
     await deleteDoc(postRef);
     setChangeState(false);
