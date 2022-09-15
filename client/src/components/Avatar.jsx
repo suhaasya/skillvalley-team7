@@ -9,7 +9,7 @@ export default function Avatar({ name, bgcolor, type, imgSrc }) {
     <div
       className={`text-neutral-content rounded-full ${
         type === "secondary" ? "w-44 h-44" : "w-11 h-11"
-      } flex items-center justify-center`}
+      } flex items-center justify-center p-6`}
       style={style}
     >
       {imgSrc ? (

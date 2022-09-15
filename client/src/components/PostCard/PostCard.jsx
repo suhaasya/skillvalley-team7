@@ -101,7 +101,7 @@ export default function PostCard({
           </ul>
         </button>
       </div>
-      <p className="leading-loose px-1 py-2 sm:px-12">{message}</p>
+      <p className="leading-loose px-1 py-2 sm:px-14">{message}</p>
       <div className="flex px-1 py-2 sm:px-12 items-center gap-12 ">
         <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
           <MdOutlineInsertComment size={"1.25rem"} />

@@ -7,16 +7,40 @@ import GoogleSignUpButton from "../components/GoogleSignUpButton";
 import FormContainer from "../components/FormContainer";
 import { useState } from "react";
 
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { GoogleAuthProvider } from "firebase/auth";
+import { useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase.config";
 
 export default function LoginPage() {
   const auth = getAuth();
+  const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
 
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
+
+  const [users, setUsers] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      // User Post Data
+      const usersSnap = await getDocs(collection(db, "users"));
+      const users = [];
+      usersSnap.forEach((doc) => {
+        users.push({ _id: doc.id, ...doc.data() });
+      });
+      setUsers(users);
+    }
+    fetchData();
+  }, []);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -36,13 +60,31 @@ export default function LoginPage() {
       });
   }
 
+  function signWithGoogle() {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const userId = result.user.uid;
+
+        if (users.some((user) => user._id === userId)) {
+          navigate("/home");
+        } else {
+          navigate("/welcome");
+        }
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(`${errorCode} ${errorMessage}`);
+      });
+  }
+
   return (
     <FormContainer onSubmit={onSubmit}>
       <div className="flex items-center justify-center">
         <h3 className="text-2xl font-medium">Login to Scream-One</h3>
         <FcLock size={"1.5rem"} />
       </div>
-      <GoogleSignUpButton />
+      <GoogleSignUpButton onClick={signWithGoogle} />
       <p className="text-center">or</p>
       <Input
         label="Email"

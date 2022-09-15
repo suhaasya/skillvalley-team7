@@ -6,12 +6,35 @@ import FormContainer from "../components/FormContainer";
 import GoogleSignUpButton from "../components/GoogleSignUpButton";
 import Input from "../components/Input";
 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { GoogleAuthProvider } from "firebase/auth";
+import { useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase.config";
 
 export default function SignupPage() {
   const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+  const [users, setUsers] = useState(null);
   const navigate = useNavigate();
   const [signupData, setSignupData] = useState({ email: "", password: "" });
+
+  useEffect(() => {
+    async function fetchData() {
+      // User Post Data
+      const usersSnap = await getDocs(collection(db, "users"));
+      const users = [];
+      usersSnap.forEach((doc) => {
+        users.push({ _id: doc.id, ...doc.data() });
+      });
+      setUsers(users);
+    }
+    fetchData();
+  }, []);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -35,10 +58,28 @@ export default function SignupPage() {
     setSignupData({ email: "", password: "" });
   }
 
+  function signWithGoogle() {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const userId = result.user.uid;
+
+        if (users.some((user) => user._id === userId)) {
+          navigate("/home");
+        } else {
+          navigate("/welcome");
+        }
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(`${errorCode} ${errorMessage}`);
+      });
+  }
+
   return (
     <FormContainer onSubmit={onSubmit}>
       <h3 className="text-center text-2xl font-medium">Join Scream-One</h3>
-      <GoogleSignUpButton />
+      <GoogleSignUpButton onClick={signWithGoogle} />
       <p className="text-center">or</p>
       <Input
         label={"Email"}
