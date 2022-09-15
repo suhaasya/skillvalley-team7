@@ -7,7 +7,9 @@ export default function LandingPage() {
   return (
     <section className="px-[2%] md:px-[5%] py-[0.5%] lg:px-[12%] bg-dark_yellow h-screen">
       <nav className="flex items-center">
-        <Logo />
+        <Link to={"/"}>
+          <Logo />
+        </Link>
         <div className="flex gap-4 ml-auto">
           <Link to={"/login"}>
             <Button size={"medium"}>Login</Button>

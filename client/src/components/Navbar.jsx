@@ -103,7 +103,9 @@ export default function Navbar() {
       className="flex items-center px-[3%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
       onClick={closeMenu}
     >
-      <Logo />
+      <Link to={"/home"}>
+        <Logo />
+      </Link>
       <div className="ml-auto flex gap-[2.5%]">
         <div className="relative">
           <SearchBar
