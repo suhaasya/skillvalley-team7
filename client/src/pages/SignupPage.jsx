@@ -43,7 +43,6 @@ export default function SignupPage() {
 
   function onSubmit(e) {
     e.preventDefault();
-    console.log("suhas");
 
     createUserWithEmailAndPassword(auth, signupData.email, signupData.password)
       .then((userCredential) => {

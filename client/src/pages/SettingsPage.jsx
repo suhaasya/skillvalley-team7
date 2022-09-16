@@ -4,15 +4,27 @@ import SettingsCard from "../components/SettingsCard";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useState } from "react";
-import { getAuth } from "firebase/auth";
+import { deleteUser, getAuth } from "firebase/auth";
 import { useEffect } from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
+import { useNavigate } from "react-router-dom";
 
 export default function SettingsPage() {
   const auth = getAuth();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [postsData, setPostsData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [passwordSettings, setPasswordSettings] = useState({
@@ -30,6 +42,16 @@ export default function SettingsPage() {
       if (userSnap.exists()) {
         setUser({ _id: userSnap.id, ...userSnap.data() });
       }
+
+      // User Post Data
+      const q = query(collection(db, "posts"), orderBy("post", "desc"));
+      const postSnap = await getDocs(q);
+      const posts = [];
+      postSnap.forEach((doc) => {
+        posts.push({ _id: doc.id, ...doc.data() });
+      });
+      setPostsData(posts);
+
       setLoading(false);
     }
     fetchData();
@@ -47,6 +69,41 @@ export default function SettingsPage() {
     setLoading(true);
     await updateDoc(userRef, { ...user });
     setLoading(false);
+  }
+
+  function deleteAccount() {
+    const userAction = window.confirm("are you sure you wanna do this?");
+
+    if (userAction) {
+      setLoading(true);
+
+      deleteUser(auth.currentUser)
+        .then(() => {
+          deleteUserData(user._id);
+
+          postsData.forEach((post) => {
+            if (post.user.uid === user._id) {
+              deleteUserPost(post._id);
+            }
+          });
+
+          setLoading(false);
+          navigate("/");
+        })
+        .catch((error) => {
+          // An error ocurred
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error(`${errorCode} ${errorMessage}`);
+        });
+    }
+  }
+
+  async function deleteUserPost(id) {
+    await deleteDoc(doc(db, "posts", id));
+  }
+  async function deleteUserData(id) {
+    await deleteDoc(doc(db, "users", id));
   }
 
   if (loading) {
@@ -121,7 +178,7 @@ export default function SettingsPage() {
             Delete your account and account data. This can’t be undone!
           </p>
 
-          <Button type={"secondary"} onClick={() => console.log("Suhas")}>
+          <Button type={"secondary"} onClick={deleteAccount}>
             Delete my account
           </Button>
         </SettingsCard>
