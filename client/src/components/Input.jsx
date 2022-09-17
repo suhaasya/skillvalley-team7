@@ -15,7 +15,7 @@ export default function Input({
 
   return type === "password" ? (
     <div className="border-2 border-solid p-2  rounded-md border-gray flex items-center justify-between bg-white">
-      <div>
+      <div className="w-full">
         <p className="text-xs text-gray">
           {label}
           {required && <span className="text-red"> *</span>}

@@ -97,7 +97,11 @@ export default function LoginPage() {
         type="password"
       />
       <div className="flex justify-between mt-4">
-        <p>Forgot Password</p>
+        <Link to="/forgot-password">
+          <span className="text-green hover:underline cursor-pointer">
+            Forgot Password
+          </span>
+        </Link>
         <Button type="success" size="medium">
           Login
         </Button>
@@ -105,7 +109,9 @@ export default function LoginPage() {
       <p className="text-center">
         Don’t have an account?{" "}
         <Link to={"/signup"}>
-          <span className="text-green">SignUp</span>
+          <span className="text-green hover:underline cursor-pointer">
+            SignUp
+          </span>
         </Link>
       </p>
     </FormContainer>
