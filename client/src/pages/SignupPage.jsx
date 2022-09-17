@@ -44,6 +44,8 @@ export default function SignupPage() {
   function onSubmit(e) {
     e.preventDefault();
 
+    setSignupData({ email: "", password: "" });
+
     createUserWithEmailAndPassword(auth, signupData.email, signupData.password)
       .then((userCredential) => {
         navigate("/welcome");
@@ -53,8 +55,6 @@ export default function SignupPage() {
         const errorMessage = error.message;
         console.error(`${errorCode} ${errorMessage}`);
       });
-
-    setSignupData({ email: "", password: "" });
   }
 
   function signWithGoogle() {

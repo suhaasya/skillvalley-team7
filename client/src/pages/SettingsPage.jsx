@@ -4,7 +4,7 @@ import SettingsCard from "../components/SettingsCard";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useState } from "react";
-import { deleteUser, getAuth } from "firebase/auth";
+import { deleteUser, getAuth, updatePassword } from "firebase/auth";
 import { useEffect } from "react";
 import {
   collection,
@@ -28,9 +28,9 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
 
   const [passwordSettings, setPasswordSettings] = useState({
-    CurrentPassword: "",
-    NewPassword: "",
-    ConfirmNewPassword: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
   });
 
   useEffect(() => {
@@ -69,6 +69,25 @@ export default function SettingsPage() {
     setLoading(true);
     await updateDoc(userRef, { ...user });
     setLoading(false);
+  }
+
+  function changePassword(e) {
+    e.preventDefault();
+    if (passwordSettings.newPassword === passwordSettings.confirmNewPassword) {
+      updatePassword(auth.currentUser, passwordSettings.newPassword)
+        .then(() => {
+          // Update successful.
+          console.log("password changed successfully");
+        })
+        .catch((error) => {
+          // An error ocurred
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error(`${errorCode} ${errorMessage}`);
+        });
+    } else {
+      console.error("Passwords are not matching");
+    }
   }
 
   function deleteAccount() {
@@ -146,29 +165,32 @@ export default function SettingsPage() {
           </div>
         </SettingsCard>
 
-        <SettingsCard title={"Change Password"}>
+        <SettingsCard title={"Change Password"} onSubmit={changePassword}>
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <Input
               label={"Current Password"}
+              name={"currentPassword"}
               required={true}
               type={"password"}
               onChange={handleChange}
-              value={passwordSettings.CurrentPassword}
+              value={passwordSettings.currentPassword}
             />
             <div></div>
             <Input
               label={"New Password"}
+              name={"newPassword"}
               type={"password"}
               required={true}
               onChange={handleChange}
-              value={passwordSettings.NewPassword}
+              value={passwordSettings.newPassword}
             />
             <Input
               label={"Confirm New Password"}
+              name={"confirmNewPassword"}
               type={"password"}
               required={true}
               onChange={handleChange}
-              value={passwordSettings.ConfirmNewPassword}
+              value={passwordSettings.confirmNewPassword}
             />
           </div>
         </SettingsCard>
