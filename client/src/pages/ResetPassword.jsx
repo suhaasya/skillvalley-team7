@@ -1,7 +1,7 @@
 import { confirmPasswordReset, getAuth } from "firebase/auth";
 import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Button from "../components/Button";
 import FormContainer from "../components/FormContainer";
@@ -12,6 +12,8 @@ export default function ResetPassword() {
   const auth = getAuth();
   const query = useQuery();
   const navigate = useNavigate();
+
+  const oobCode = query.get("oobCode");
 
   const [password, setPassword] = useState({
     newPassword: "",
@@ -25,15 +27,23 @@ export default function ResetPassword() {
 
   function resetPassword(e) {
     e.preventDefault();
-    const oobCode = query.get("oobCode");
 
     if (password.newPassword === password.confirmNewPassword) {
-      confirmPasswordReset(auth, oobCode, password.newPassword);
-      toast.success("Password reset successfully");
-      navigate("/login");
+      confirmPasswordReset(auth, oobCode, password.newPassword)
+        .then((res) => {
+          toast.success("Password reset successfully");
+          navigate("/login");
+        })
+        .catch((error) => {
+          toast.error(error.message);
+        });
     } else {
       toast.error("Passwords doesnt Match");
     }
+  }
+
+  if (!oobCode) {
+    return <Navigate to="/forgot-password" />;
   }
 
   return (
