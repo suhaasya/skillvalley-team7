@@ -12,6 +12,8 @@ import PageDoesNotExit from "./pages/PageDoesNotExit";
 import PrivateRoute from "./components/PrivateRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -40,13 +42,15 @@ function App() {
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/welcome" element={<WelcomePage />} />
             <Route path="/*" element={<PageDoesNotExit />} />
           </Routes>
         </div>
       </Router>
-      <ToastContainer autoClose={1000} />
+      <ToastContainer autoClose={1000} position="bottom-center" />
     </>
   );
 }

@@ -45,8 +45,6 @@ export default function SignupPage() {
   function onSubmit(e) {
     e.preventDefault();
 
-    setSignupData({ email: "", password: "" });
-
     createUserWithEmailAndPassword(auth, signupData.email, signupData.password)
       .then((userCredential) => {
         navigate("/welcome");
@@ -54,6 +52,8 @@ export default function SignupPage() {
       .catch((error) => {
         toast.error(error.message);
       });
+
+    setSignupData({ email: "", password: "" });
   }
 
   function signWithGoogle() {
@@ -103,7 +103,9 @@ export default function SignupPage() {
       <p className="text-center">
         Already have an Account?{" "}
         <Link to={"/login"}>
-          <span className="text-green">Login</span>
+          <span className="text-green hover:underline cursor-pointer">
+            Login
+          </span>
         </Link>
       </p>
     </FormContainer>
