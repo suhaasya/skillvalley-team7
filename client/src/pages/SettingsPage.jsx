@@ -19,6 +19,7 @@ import {
 import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function SettingsPage() {
   const auth = getAuth();
@@ -63,30 +64,45 @@ export default function SettingsPage() {
     setPasswordSettings((prev) => ({ ...prev, [name]: value }));
   }
 
-  async function handleSubmit(e) {
+  async function updateUserData(e) {
     e.preventDefault();
     const userRef = doc(db, "users", auth.currentUser?.uid);
-    setLoading(true);
+    const id = toast.loading("Updating...");
+
     await updateDoc(userRef, { ...user });
-    setLoading(false);
+    toast.update(id, {
+      render: "Successfully Changed",
+      type: "success",
+      isLoading: false,
+      autoClose: 1000,
+    });
   }
 
   function changePassword(e) {
     e.preventDefault();
     if (passwordSettings.newPassword === passwordSettings.confirmNewPassword) {
+      const id = toast.loading("Updating...");
       updatePassword(auth.currentUser, passwordSettings.newPassword)
         .then(() => {
           // Update successful.
-          console.log("password changed successfully");
+          toast.update(id, {
+            render: "Successfully Changed",
+            type: "success",
+            isLoading: false,
+            autoClose: 1000,
+          });
         })
         .catch((error) => {
           // An error ocurred
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.error(`${errorCode} ${errorMessage}`);
+          toast.update(id, {
+            render: error.message,
+            type: "success",
+            isLoading: false,
+            autoClose: 1000,
+          });
         });
     } else {
-      console.error("Passwords are not matching");
+      toast.error("Passwords are not matching");
     }
   }
 
@@ -94,7 +110,7 @@ export default function SettingsPage() {
     const userAction = window.confirm("are you sure you wanna do this?");
 
     if (userAction) {
-      setLoading(true);
+      const id = toast.loading("Deleting...");
 
       deleteUser(auth.currentUser)
         .then(() => {
@@ -106,14 +122,22 @@ export default function SettingsPage() {
             }
           });
 
-          setLoading(false);
+          toast.update(id, {
+            render: "Successfully Deleted your account",
+            type: "success",
+            isLoading: false,
+            autoClose: 1000,
+          });
           navigate("/");
         })
         .catch((error) => {
           // An error ocurred
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.error(`${errorCode} ${errorMessage}`);
+          toast.update(id, {
+            render: error.message,
+            type: "error",
+            isLoading: false,
+            autoClose: 1000,
+          });
         });
     }
   }
@@ -132,7 +156,7 @@ export default function SettingsPage() {
   return (
     <Layout>
       <section className="px-[2%] py-4 flex flex-col gap-4">
-        <SettingsCard title={"Basic Profile"} onSubmit={handleSubmit}>
+        <SettingsCard title={"Basic Profile"} onSubmit={updateUserData}>
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <Input
               label={"First Name"}

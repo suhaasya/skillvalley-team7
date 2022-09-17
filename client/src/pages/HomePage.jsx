@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
+import { toast } from "react-toastify";
 
 export default function HomePage() {
   const auth = getAuth();
@@ -58,29 +59,44 @@ export default function HomePage() {
 
   async function sharePost(e) {
     e.preventDefault();
-    setChangeState(true);
-    try {
-      const postData = {
-        user: {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          uid: user._id,
-        },
-        post: {
-          message: post,
 
-          likes: 0,
-          date: getDate(),
-        },
-      };
-      await setDoc(doc(db, "posts", uuid()), postData);
-      setPost("");
-      setChangeState(false);
-    } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(`${errorCode} ${errorMessage}`);
-      setChangeState(false);
+    if (post.length > 0) {
+      const id = toast.loading("Posting...");
+      setChangeState(true);
+      try {
+        const postData = {
+          user: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            uid: user._id,
+          },
+          post: {
+            message: post,
+
+            likes: 0,
+            date: getDate(),
+          },
+        };
+        await setDoc(doc(db, "posts", uuid()), postData);
+        setPost("");
+        toast.update(id, {
+          render: "Successfully Posted",
+          type: "success",
+          isLoading: false,
+          autoClose: 1000,
+        });
+        setChangeState(false);
+      } catch (error) {
+        toast.update(id, {
+          render: error.message,
+          type: "error",
+          isLoading: false,
+          autoClose: 1000,
+        });
+        setChangeState(false);
+      }
+    } else {
+      toast.error("Post cant be empty");
     }
   }
 

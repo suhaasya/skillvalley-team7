@@ -16,6 +16,7 @@ import { GoogleAuthProvider } from "firebase/auth";
 import { useEffect } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase.config";
+import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const auth = getAuth();
@@ -54,9 +55,7 @@ export default function LoginPage() {
         navigate("/home");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(`${errorCode} ${errorMessage}`);
+        toast.error(error.message);
       });
   }
 
@@ -72,9 +71,7 @@ export default function LoginPage() {
         }
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(`${errorCode} ${errorMessage}`);
+        toast.error(error.message);
       });
   }
 

@@ -10,39 +10,44 @@ import SignupPage from "./pages/SignupPage";
 import WelcomePage from "./pages/WelcomePage";
 import PageDoesNotExit from "./pages/PageDoesNotExit";
 import PrivateRoute from "./components/PrivateRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/home" element={<PrivateRoute />}>
-            <Route path="/home" element={<HomePage />} />
-          </Route>
+    <>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<PrivateRoute />}>
+              <Route path="/home" element={<HomePage />} />
+            </Route>
 
-          <Route path="/bookmarks" element={<PrivateRoute />}>
-            <Route path="/bookmarks" element={<BookmarksPage />} />
-          </Route>
+            <Route path="/bookmarks" element={<PrivateRoute />}>
+              <Route path="/bookmarks" element={<BookmarksPage />} />
+            </Route>
 
-          <Route path="/messages" element={<PrivateRoute />}>
-            <Route path="/messages" element={<MessagesPage />} />
-          </Route>
+            <Route path="/messages" element={<PrivateRoute />}>
+              <Route path="/messages" element={<MessagesPage />} />
+            </Route>
 
-          <Route path="/profile" element={<PrivateRoute />}>
-            <Route path="/profile" element={<ProfilePage />} />
-          </Route>
+            <Route path="/profile" element={<PrivateRoute />}>
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
 
-          <Route path="/settings" element={<PrivateRoute />}>
-            <Route path="/settings" element={<SettingsPage />} />
-          </Route>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/welcome" element={<WelcomePage />} />
-          <Route path="/*" element={<PageDoesNotExit />} />
-        </Routes>
-      </div>
-    </Router>
+            <Route path="/settings" element={<PrivateRoute />}>
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/welcome" element={<WelcomePage />} />
+            <Route path="/*" element={<PageDoesNotExit />} />
+          </Routes>
+        </div>
+      </Router>
+      <ToastContainer autoClose={1000} />
+    </>
   );
 }
 

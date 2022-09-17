@@ -7,6 +7,7 @@ import { getAuth, updateProfile } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function WelcomePage() {
   const auth = getAuth();
@@ -47,9 +48,7 @@ export default function WelcomePage() {
 
       navigate("/home");
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error(`${errorCode} ${errorMessage}`);
+      toast.error(error.message);
     }
   }
 

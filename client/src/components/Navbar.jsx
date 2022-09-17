@@ -16,6 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import { db } from "../firebase.config";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 export default function Navbar() {
   const auth = getAuth();
@@ -85,13 +86,10 @@ export default function Navbar() {
   function logout() {
     signOut(auth)
       .then(() => {
-        console.log("bye bye");
         navigate("/");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(`${errorCode} ${errorMessage}`);
+        toast.error(error.message);
       });
   }
 
