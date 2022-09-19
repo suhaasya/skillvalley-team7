@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/Button";
+import GoogleSignUpButton from "../components/GoogleSignUpButton";
 import Logo from "../components/Logo";
 
 export default function LandingPage() {
@@ -21,6 +22,17 @@ export default function LandingPage() {
           </Link>
         </div>
       </nav>
+      <hero className="flex flex-col items-center justify-center h-4/5 gap-8 ">
+        <h1 className="text-6xl">The Learning Network</h1>
+        <h3 className="text-2xl">for people in tech and students.</h3>
+        <GoogleSignUpButton type="secondary" />
+        <span>or</span>
+        <Link to="signup">
+          <span className="border-solid border-b-2 border-green font-medium hover:border-dark_green">
+            Signup w/ Email
+          </span>
+        </Link>
+      </hero>
     </section>
   );
 }
