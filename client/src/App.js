@@ -14,11 +14,12 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import { GlobalProvider } from "./context/GlobalState";
 
 function App() {
   return (
-    <>
-      <Router>
+    <Router>
+      <GlobalProvider>
         <div className="App">
           <Routes>
             <Route path="/" element={<LandingPage />} />
@@ -49,9 +50,9 @@ function App() {
             <Route path="/*" element={<PageDoesNotExit />} />
           </Routes>
         </div>
-      </Router>
-      <ToastContainer autoClose={1000} position="bottom-center" />
-    </>
+        <ToastContainer autoClose={1000} position="bottom-center" />
+      </GlobalProvider>
+    </Router>
   );
 }
 
