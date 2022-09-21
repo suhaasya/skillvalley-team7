@@ -7,20 +7,14 @@ import GoogleSignUpButton from "../components/GoogleSignUpButton";
 import FormContainer from "../components/FormContainer";
 import { useState } from "react";
 
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from "firebase/auth";
-import { GoogleAuthProvider } from "firebase/auth";
-import { useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase.config";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { GlobalContext } from "../context/GlobalState";
 
 export default function LoginPage() {
   const auth = getAuth();
-  const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
 
   const [loginData, setLoginData] = useState({
@@ -28,20 +22,7 @@ export default function LoginPage() {
     password: "",
   });
 
-  const [users, setUsers] = useState(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      // User Post Data
-      const usersSnap = await getDocs(collection(db, "users"));
-      const users = [];
-      usersSnap.forEach((doc) => {
-        users.push({ _id: doc.id, ...doc.data() });
-      });
-      setUsers(users);
-    }
-    fetchData();
-  }, []);
+  const { signWithGoogle } = useContext(GlobalContext);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -53,22 +34,6 @@ export default function LoginPage() {
     signInWithEmailAndPassword(auth, loginData.email, loginData.password)
       .then((userCredential) => {
         navigate("/home");
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  }
-
-  function signWithGoogle() {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const userId = result.user.uid;
-
-        if (users.some((user) => user._id === userId)) {
-          navigate("/home");
-        } else {
-          navigate("/welcome");
-        }
       })
       .catch((error) => {
         toast.error(error.message);

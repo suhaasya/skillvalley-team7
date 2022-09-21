@@ -14,6 +14,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
 import { useEffect } from "react";
+import { useContext } from "react";
+import { GlobalContext } from "../../context/GlobalState";
 
 export default function PostCard({
   authorName,
@@ -21,22 +23,21 @@ export default function PostCard({
   id,
   publishedDate,
   message,
-  setChangeState,
   likes,
-  currentUser,
 }) {
+  const { user, setState, setLoading } = useContext(GlobalContext);
+
   const [showMenu, setShowMenu] = useState(false);
-  const [bookmarked, setBookmarked] = useState(
-    currentUser.bookmarks.includes(id)
-  );
+  const [bookmarked, setBookmarked] = useState(user.bookmarks.includes(id));
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
   }
 
   useEffect(() => {
     async function bookmarkPost() {
+      setState(true);
       try {
-        const userRef = doc(db, "users", currentUser._id);
+        const userRef = doc(db, "users", user._id);
 
         if (bookmarked) {
           await updateDoc(userRef, {
@@ -50,13 +51,14 @@ export default function PostCard({
       } catch (error) {
         console.error(error.message);
       }
+      setState(false);
     }
     bookmarkPost();
-  }, [currentUser._id, id, bookmarked]);
+  }, [user._id, id, bookmarked, setState]);
 
   async function deletePost() {
-    setChangeState(true);
-    const userRef = doc(db, "users", currentUser._id);
+    setLoading(true);
+    const userRef = doc(db, "users", user._id);
     if (bookmarked) {
       await updateDoc(userRef, {
         bookmarks: arrayRemove(id),
@@ -64,7 +66,7 @@ export default function PostCard({
     }
     const postRef = doc(db, "posts", id);
     await deleteDoc(postRef);
-    setChangeState(false);
+    setLoading(false);
   }
 
   return (

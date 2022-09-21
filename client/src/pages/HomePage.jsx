@@ -6,63 +6,27 @@ import Button from "../components/Button";
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import getDate from "../utils/getDate";
-import { getAuth } from "firebase/auth";
-import { useEffect } from "react";
-import {
-  getDoc,
-  setDoc,
-  doc,
-  getDocs,
-  collection,
-  query,
-  orderBy,
-} from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { GlobalContext } from "../context/GlobalState";
 
 export default function HomePage() {
-  const auth = getAuth();
-  const [user, setUser] = useState(null);
-  const [postsData, setPostsData] = useState(null);
+  const { user, postsData, loading, setState } = useContext(GlobalContext);
   const [post, setPost] = useState("");
-  const [changeState, setChangeState] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   function handleChange(e) {
     setPost(e.target.value);
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      // User Data
-      const userRef = doc(db, "users", auth.currentUser?.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        setUser({ _id: userSnap.id, ...userSnap.data() });
-      }
-
-      // User Post Data
-      const q = query(collection(db, "posts"), orderBy("post", "desc"));
-      const postSnap = await getDocs(q);
-      const posts = [];
-      postSnap.forEach((doc) => {
-        posts.push({ _id: doc.id, ...doc.data() });
-      });
-      setPostsData(posts);
-
-      setLoading(false);
-    }
-    setTimeout(fetchData, 1000);
-  }, [auth.currentUser?.uid, loading, changeState]);
 
   async function sharePost(e) {
     e.preventDefault();
 
     if (post.length > 0) {
       const id = toast.loading("Posting...");
-      setChangeState(true);
+      setState(true);
       try {
         const postData = {
           user: {
@@ -85,7 +49,7 @@ export default function HomePage() {
           isLoading: false,
           autoClose: 1000,
         });
-        setChangeState(false);
+        setState(false);
       } catch (error) {
         toast.update(id, {
           render: error.message,
@@ -93,7 +57,7 @@ export default function HomePage() {
           isLoading: false,
           autoClose: 1000,
         });
-        setChangeState(false);
+        setState(false);
       }
     } else {
       toast.error("Post cant be empty");
@@ -132,9 +96,7 @@ export default function HomePage() {
             likes={post.post.likes}
             id={post._id}
             key={post._id}
-            setChangeState={setChangeState}
             showDelete={user._id === post.user.uid}
-            currentUser={user}
           />
         ))}
         <li className="mb-4 text-xs pb-4 text-center">

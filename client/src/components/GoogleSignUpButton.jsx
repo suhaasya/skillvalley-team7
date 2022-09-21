@@ -4,7 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 export default function GoogleSignUpButton({ onClick, type }) {
   return type === "secondary" ? (
     <div
-      className="flex gap-2 items-center justify-center rounded border-solid border-2 border-black py-2 cursor-pointer w-1/5 bg-black hover:rounded-lg"
+      className="flex gap-2 items-center justify-center rounded border-solid border-2 border-black py-2 cursor-pointer w-64 bg-black hover:rounded-lg"
       onClick={onClick}
     >
       <FcGoogle size={"1.5rem"} />
