@@ -87,6 +87,7 @@ export const GlobalProvider = ({ children }) => {
     <GlobalContext.Provider
       value={{
         user,
+        setUser,
         usersData,
         userPostsData,
         postsData,

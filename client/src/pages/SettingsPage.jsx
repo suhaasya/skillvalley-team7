@@ -5,58 +5,24 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import { useState } from "react";
 import { deleteUser, getAuth, updatePassword } from "firebase/auth";
-import { useEffect } from "react";
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-  updateDoc,
-} from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { GlobalContext } from "../context/GlobalState";
 
 export default function SettingsPage() {
   const auth = getAuth();
+  const { user, setUser, postsData, loading } = useContext(GlobalContext);
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [postsData, setPostsData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const [passwordSettings, setPasswordSettings] = useState({
     currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
-
-  useEffect(() => {
-    async function fetchData() {
-      // User Data
-      const userRef = doc(db, "users", auth.currentUser?.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        setUser({ _id: userSnap.id, ...userSnap.data() });
-      }
-
-      // User Post Data
-      const q = query(collection(db, "posts"), orderBy("post", "desc"));
-      const postSnap = await getDocs(q);
-      const posts = [];
-      postSnap.forEach((doc) => {
-        posts.push({ _id: doc.id, ...doc.data() });
-      });
-      setPostsData(posts);
-
-      setLoading(false);
-    }
-    fetchData();
-  }, [auth.currentUser?.uid]);
 
   function handleChange(e) {
     const { name, value } = e.target;

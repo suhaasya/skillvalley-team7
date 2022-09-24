@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { getAuth, signOut } from "firebase/auth";
 
 import {
@@ -14,43 +14,18 @@ import Avatar from "./Avatar";
 import Logo from "./Logo";
 import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
-import { db } from "../firebase.config";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { toast } from "react-toastify";
+import { useContext } from "react";
+import { GlobalContext } from "../context/GlobalState";
 
 export default function Navbar() {
   const auth = getAuth();
   const navigate = useNavigate();
-
+  const { user, usersData, loading } = useContext(GlobalContext);
   const [popUpMenu, setPopUpMenu] = useState(false);
   const [searchResult, setSearchResult] = useState(false);
-  const [user, setUser] = useState(null);
-  const [users, setUsers] = useState(null);
-  const [searchUsers, setSearchUsers] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [searchUsersData, setSearchUsersData] = useState(usersData);
   const [searchValue, setSearchValue] = useState("");
-
-  useEffect(() => {
-    async function fetchData() {
-      // User Data
-      const userRef = doc(db, "users", auth.currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists()) {
-        setUser(userSnap.data());
-      }
-
-      // User Post Data
-      const usersSnap = await getDocs(collection(db, "users"));
-      const users = [];
-      usersSnap.forEach((doc) => {
-        users.push({ _id: doc.id, ...doc.data() });
-      });
-      setUsers(users);
-      setSearchUsers(users);
-      setLoading(false);
-    }
-    fetchData();
-  }, [auth.currentUser.uid]);
 
   function handleChange(e) {
     setPopUpMenu(false);
@@ -59,7 +34,7 @@ export default function Navbar() {
 
     if (value.length > 0) {
       setSearchResult(true);
-      setSearchUsers((prev) => {
+      setSearchUsersData((prev) => {
         return prev.filter((item) =>
           `${item.firstName} ${item.lastName}`
             .toLowerCase()
@@ -69,7 +44,7 @@ export default function Navbar() {
     } else {
       setSearchResult(false);
       setSearchValue("");
-      setSearchUsers(users);
+      setSearchUsersData(usersData);
     }
   }
 
@@ -122,8 +97,8 @@ export default function Navbar() {
             Profile Card shown in search result
             */}
 
-            {searchUsers.length > 0 ? (
-              searchUsers.map((user, i) => (
+            {searchUsersData.length > 0 ? (
+              searchUsersData.map((user, i) => (
                 <ProfileCard
                   userName={`${user.firstName.trim()} ${user.lastName.trim()}`}
                   userBio={user.description}
