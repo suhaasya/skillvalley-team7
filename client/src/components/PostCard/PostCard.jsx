@@ -29,6 +29,7 @@ export default function PostCard({
 
   const [showMenu, setShowMenu] = useState(false);
   const [bookmarked, setBookmarked] = useState(user.bookmarks.includes(id));
+
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
   }

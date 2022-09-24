@@ -12,8 +12,6 @@ export default function BookmarksPage() {
     return <Spinner />;
   }
 
-  console.log("suhas");
-
   return (
     <Layout bookmarks={true}>
       <ul className="md:px-24 py-2">
