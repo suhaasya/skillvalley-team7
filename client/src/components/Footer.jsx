@@ -1,8 +1,8 @@
 import React from "react";
 import { AiOutlineHome, AiFillHome } from "react-icons/ai";
 import {
-  // RiMessage2Line,
-  // RiMessage2Fill,
+  RiMessage2Line,
+  RiMessage2Fill,
   RiBookmarkFill,
   RiBookmarkLine,
   RiAccountCircleLine,
@@ -39,7 +39,7 @@ export default function Footer({ home, bookmarks, messages, profile }) {
           </Link>
         </div>
 
-        {/* <div className="w-1/4">
+        <div className="w-1/4">
           <Link to="/messages">
             <MenuItem
               name={"Messages"}
@@ -49,7 +49,7 @@ export default function Footer({ home, bookmarks, messages, profile }) {
               secondary={true}
             />
           </Link>
-        </div> */}
+        </div>
 
         <div className="w-1/3">
           <Link to={"/profile"}>

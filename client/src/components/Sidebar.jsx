@@ -3,8 +3,8 @@ import React from "react";
 
 import { AiOutlineHome, AiFillHome } from "react-icons/ai";
 import {
-  // RiMessage2Line,
-  // RiMessage2Fill,
+  RiMessage2Line,
+  RiMessage2Fill,
   RiBookmarkFill,
   RiBookmarkLine,
   RiAccountCircleLine,
@@ -33,14 +33,14 @@ export default function Sidebar({ home, bookmarks, messages, profile }) {
             condition={bookmarks}
           />
         </Link>
-        {/* <Link to="/messages">
+        <Link to="/messages">
           <MenuItem
             name={"Messages"}
             icon={<RiMessage2Line />}
             iconActive={<RiMessage2Fill />}
             condition={messages}
           />
-        </Link> */}
+        </Link>
         <Link to="/profile">
           <MenuItem
             name={"Profile"}

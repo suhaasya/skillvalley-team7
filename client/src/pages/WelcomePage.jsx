@@ -39,7 +39,7 @@ export default function WelcomePage() {
       };
 
       await setDoc(doc(db, "users", auth.currentUser.uid), userDataCopy);
-
+      await setDoc(doc(db, "userChats", auth.currentUser.uid), {});
       setUserData({
         firstName: "",
         lastName: "",
