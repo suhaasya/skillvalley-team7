@@ -1,9 +1,19 @@
 import React from "react";
 import { RiSearchLine, RiCloseLine } from "react-icons/ri";
 
-export default function SearchBar({ onChange, value, setValue }) {
+export default function SearchBar({
+  onChange,
+  value,
+  setValue,
+  type,
+  onKeyDown,
+}) {
   return (
-    <div className="flex items-center border-solid border-2 border-light_gray p-2 w-60 sm:w-80 rounded-md ">
+    <div
+      className={`flex items-center border-solid border-2 border-light_gray p-2 w-60 ${
+        type === "normal" && "sm:w-80"
+      } rounded-md`}
+    >
       <div className="text-gray">
         <RiSearchLine />
       </div>
@@ -12,6 +22,7 @@ export default function SearchBar({ onChange, value, setValue }) {
         placeholder="Search..."
         onChange={(e) => onChange(e)}
         value={value}
+        onKeyDown={onKeyDown}
       ></input>
       {value.length > 0 && (
         <button
@@ -24,3 +35,9 @@ export default function SearchBar({ onChange, value, setValue }) {
     </div>
   );
 }
+SearchBar.defaultProps = {
+  value: "",
+  onChange: () => {},
+  type: "normal",
+  onKeyDown: () => {},
+};

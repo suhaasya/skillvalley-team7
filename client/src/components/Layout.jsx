@@ -13,14 +13,14 @@ export default function Layout({
   return (
     <section className="">
       <Navbar />
-      <main className="flex md:px-[5%] lg:px-[11%] bg-dark_white h-[91.5vh]">
+      <main className="flex md:px-[5%] lg:px-[11%] bg-dark_white h-[90.7vh]">
         <Sidebar
           home={home}
           bookmarks={bookmarks}
           messages={messages}
           profile={profile}
         />
-        <section className="bg-white w-full lg:w-4/5 border-solid border-x-2 border-light_gray overflow-y-scroll pb-16">
+        <section className="bg-white w-full lg:w-4/5 border-solid border-x-2 border-light_gray overflow-y-scroll">
           {children}
         </section>
       </main>

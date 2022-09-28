@@ -2,7 +2,13 @@ import React from "react";
 import Avatar from "./Avatar";
 import stringAvatar from "../utils/stringAvatar";
 
-export default function ProfileCard({ noUser, userName, userBio }) {
+export default function ProfileCard({
+  noUser,
+  userName,
+  userBio,
+  onClick,
+  id,
+}) {
   return noUser ? (
     <li className="py-1 px-2 text-center">
       <p className="text-xs font-light">
@@ -10,13 +16,18 @@ export default function ProfileCard({ noUser, userName, userBio }) {
       </p>
     </li>
   ) : (
-    <li className="hover:bg-dark_white py-1 px-2 cursor-pointer flex items-center gap-1">
-      <Avatar {...stringAvatar(userName)} />
+    userName && (
+      <li
+        className="hover:bg-dark_white py-1 px-2 cursor-pointer flex items-center gap-1"
+        onClick={() => onClick()}
+      >
+        <Avatar {...stringAvatar(userName)} />
 
-      <div>
-        <h6 className="text-sm">{userName}</h6>
-        <p className="text-xs">{userBio}</p>
-      </div>
-    </li>
+        <div>
+          <h6 className="text-sm">{userName}</h6>
+          <p className="text-xs">{userBio}</p>
+        </div>
+      </li>
+    )
   );
 }

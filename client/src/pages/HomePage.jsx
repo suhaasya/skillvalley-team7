@@ -23,7 +23,6 @@ export default function HomePage() {
 
   async function sharePost(e) {
     e.preventDefault();
-
     if (post.length > 0) {
       const id = toast.loading("Posting...");
       setState(true);
@@ -99,7 +98,7 @@ export default function HomePage() {
             showDelete={user._id === post.user.uid}
           />
         ))}
-        <li className="mb-4 text-xs pb-4 text-center">
+        <li className="mb-12 text-xs pb-4 text-center">
           That’s it so far. Hope you got some work inspiration from your
           network! :)
         </li>
