@@ -27,28 +27,36 @@ export default function WelcomePage() {
   async function onSubmit(e) {
     e.preventDefault();
 
-    try {
-      updateProfile(auth.currentUser, {
-        displayName: `${userData.firstName}${userData.lastName}`,
-      });
+    if (
+      userData.firstName === "" ||
+      userData.lastName === "" ||
+      userData.briefBio === ""
+    ) {
+      toast.error("please fill all the data");
+    } else {
+      try {
+        updateProfile(auth.currentUser, {
+          displayName: `${userData.firstName}${userData.lastName}`,
+        });
 
-      const userDataCopy = {
-        ...userData,
-        bookmarks: [],
-        email: auth.currentUser.email,
-      };
+        const userDataCopy = {
+          ...userData,
+          bookmarks: [],
+          email: auth.currentUser.email,
+        };
 
-      await setDoc(doc(db, "users", auth.currentUser.uid), userDataCopy);
-      await setDoc(doc(db, "userChats", auth.currentUser.uid), {});
-      setUserData({
-        firstName: "",
-        lastName: "",
-        briefBio: "",
-      });
+        await setDoc(doc(db, "users", auth.currentUser.uid), userDataCopy);
+        await setDoc(doc(db, "userChats", auth.currentUser.uid), {});
+        setUserData({
+          firstName: "",
+          lastName: "",
+          briefBio: "",
+        });
 
-      navigate("/home");
-    } catch (error) {
-      toast.error(error.message);
+        navigate("/home");
+      } catch (error) {
+        toast.error(error.message);
+      }
     }
   }
 
