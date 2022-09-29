@@ -18,16 +18,31 @@ export default function ProfileCard({
   ) : (
     userName && (
       <li
-        className="hover:bg-dark_white py-1 px-2 cursor-pointer flex items-center gap-1"
+        className={` py-1 px-2 ${
+          userName !== "undefined undefined" &&
+          "cursor-pointer hover:bg-dark_white"
+        } flex items-center gap-1`}
         onClick={() => onClick()}
       >
-        <Avatar {...stringAvatar(userName)} />
+        {userName !== "undefined undefined" && (
+          <Avatar {...stringAvatar(userName)} />
+        )}
 
         <div>
-          <h6 className="text-sm">{userName}</h6>
-          <p className="text-xs">{userBio}</p>
+          <h6 className="text-sm">
+            {userName !== "undefined undefined" ? userName : "Select a Message"}
+          </h6>
+          <p className="text-xs">
+            {userName !== "undefined undefined"
+              ? userBio
+              : "Choose from your existing conversations, start a new one with search."}
+          </p>
         </div>
       </li>
     )
   );
 }
+
+ProfileCard.defaultProps = {
+  onClick: () => {},
+};

@@ -29,6 +29,7 @@ export default function PostCard({
 
   const [showMenu, setShowMenu] = useState(false);
   const [bookmarked, setBookmarked] = useState(user.bookmarks.includes(id));
+  const [like, setLike] = useState(false);
 
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
@@ -37,6 +38,7 @@ export default function PostCard({
   useEffect(() => {
     async function bookmarkPost() {
       setState(true);
+
       try {
         const userRef = doc(db, "users", user._id);
 
@@ -52,10 +54,11 @@ export default function PostCard({
       } catch (error) {
         console.error(error.message);
       }
+
       setState(false);
     }
     bookmarkPost();
-  }, [user._id, id, bookmarked, setState]);
+  }, [user._id, id, bookmarked, setState, like]);
 
   async function deletePost() {
     setLoading(true);
@@ -110,7 +113,10 @@ export default function PostCard({
           <MdOutlineInsertComment size={"1.25rem"} />
         </button>
         <div className="flex items-center ">
-          <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
+          <button
+            className="p-2 rounded-3xl hover:bg-light_green hover:text-green"
+            onClick={() => setLike((prev) => !prev)}
+          >
             <RiThumbUpLine size={"1.25rem"} />
           </button>
           <p className="p-2 text-sm">{likes}</p>
