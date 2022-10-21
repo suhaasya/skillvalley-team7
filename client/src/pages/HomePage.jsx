@@ -36,7 +36,7 @@ export default function HomePage() {
           post: {
             message: post,
 
-            likes: 0,
+            likes: [],
             date: getDate(),
           },
         };

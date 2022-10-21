@@ -2,7 +2,12 @@ import Avatar from "../Avatar";
 import React, { useState } from "react";
 import { GoKebabVertical } from "react-icons/go";
 import { MdOutlineInsertComment } from "react-icons/md";
-import { RiThumbUpLine, RiBookmarkLine, RiBookmarkFill } from "react-icons/ri";
+import {
+  RiThumbUpLine,
+  RiBookmarkLine,
+  RiBookmarkFill,
+  RiThumbUpFill,
+} from "react-icons/ri";
 import stringAvatar from "../../utils/stringAvatar";
 import "./PostCard.css";
 import {
@@ -13,7 +18,6 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { db } from "../../firebase.config";
-import { useEffect } from "react";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalState";
 
@@ -29,39 +33,15 @@ export default function PostCard({
 
   const [showMenu, setShowMenu] = useState(false);
   const [bookmarked, setBookmarked] = useState(user.bookmarks.includes(id));
-  const [like, setLike] = useState(false);
+  const [like, setLike] = useState(likes.includes(user._id));
 
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
   }
 
-  useEffect(() => {
-    async function bookmarkPost() {
-      setState(true);
-
-      try {
-        const userRef = doc(db, "users", user._id);
-
-        if (bookmarked) {
-          await updateDoc(userRef, {
-            bookmarks: arrayUnion(id),
-          });
-        } else {
-          await updateDoc(userRef, {
-            bookmarks: arrayRemove(id),
-          });
-        }
-      } catch (error) {
-        console.error(error.message);
-      }
-
-      setState(false);
-    }
-    bookmarkPost();
-  }, [user._id, id, bookmarked, setState, like]);
-
   async function deletePost() {
     setLoading(true);
+    setState(true);
     const userRef = doc(db, "users", user._id);
     if (bookmarked) {
       await updateDoc(userRef, {
@@ -70,7 +50,42 @@ export default function PostCard({
     }
     const postRef = doc(db, "posts", id);
     await deleteDoc(postRef);
+    setState(false);
     setLoading(false);
+  }
+
+  async function handleLike() {
+    setState(true);
+    setLike((prev) => !prev);
+    const postsRef = doc(db, "posts", id);
+
+    if (likes.includes(user._id)) {
+      await updateDoc(postsRef, {
+        "post.likes": arrayRemove(user._id),
+      });
+    } else {
+      await updateDoc(postsRef, {
+        "post.likes": arrayUnion(user._id),
+      });
+    }
+    setState(false);
+  }
+
+  async function handleBookmark() {
+    setState(true);
+    setBookmarked((prev) => !prev);
+    const userRef = doc(db, "users", user._id);
+
+    if (user.bookmarks.includes(id)) {
+      await updateDoc(userRef, {
+        bookmarks: arrayRemove(id),
+      });
+    } else {
+      await updateDoc(userRef, {
+        bookmarks: arrayUnion(id),
+      });
+    }
+    setState(false);
   }
 
   return (
@@ -114,18 +129,22 @@ export default function PostCard({
         </button>
         <div className="flex items-center ">
           <button
-            className="p-2 rounded-3xl hover:bg-light_green hover:text-green"
-            onClick={() => setLike((prev) => !prev)}
+            className={`p-2 rounded-3xl hover:bg-light_green hover:text-green ${
+              like && "text-green"
+            }`}
+            onClick={handleLike}
           >
-            <RiThumbUpLine size={"1.25rem"} />
+            {like ? (
+              <RiThumbUpFill size={"1.25rem"} />
+            ) : (
+              <RiThumbUpLine size={"1.25rem"} />
+            )}
           </button>
-          <p className="p-2 text-sm">{likes}</p>
+          <p className="p-2 text-sm">{likes.length}</p>
         </div>
         <button
           className="p-2 rounded-3xl hover:bg-light_green hover:text-green"
-          onClick={() => {
-            setBookmarked((prev) => !prev);
-          }}
+          onClick={handleBookmark}
         >
           {bookmarked ? (
             <div className="text-green">
