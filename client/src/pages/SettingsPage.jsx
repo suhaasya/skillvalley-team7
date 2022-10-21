@@ -121,7 +121,7 @@ export default function SettingsPage() {
 
   return (
     <Layout>
-      <section className="px-[2%] py-4 flex flex-col gap-4">
+      <section className="px-[2%] py-4 flex flex-col gap-4 mb-12">
         <SettingsCard title={"Basic Profile"} onSubmit={updateUserData}>
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <Input

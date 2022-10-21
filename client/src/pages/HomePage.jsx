@@ -63,7 +63,7 @@ export default function HomePage() {
     }
   }
 
-  if (loading) {
+  if (loading || !user) {
     return <Spinner />;
   }
   return (
