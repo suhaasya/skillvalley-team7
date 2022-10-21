@@ -53,7 +53,7 @@ export default function WelcomePage() {
           briefBio: "",
         });
 
-        navigate("/home");
+        navigate("/login");
       } catch (error) {
         toast.error(error.message);
       }
