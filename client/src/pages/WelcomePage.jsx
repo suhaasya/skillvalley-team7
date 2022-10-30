@@ -54,6 +54,7 @@ export default function WelcomePage() {
         });
 
         navigate("/login");
+        toast.success("Account create successfully please login");
       } catch (error) {
         toast.error(error.message);
       }
