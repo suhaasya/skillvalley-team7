@@ -25,17 +25,13 @@
   </ol>
 </details>
 
-<!-- ABOUT THE PROJECT -->
+## Project demo
 
-## About The Project
-
-This project is a part of Skillvalley Cohort.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+![](./scream-demo.gif)
 
 ### Built With
 
-Will update soon...
+React, Tailwind and Firebase
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,17 +97,8 @@ Check out [Contributing.md](./Contributing.md)
 
 ## Contact
 
-Anjali Chauhan - [@anjalii1102](https://twitter.com/anjalii1102) - ac.chauhan1102@gmail.com <br />
-Github Link: [https://github.com/anjali1102](https://github.com/anjali1102)
-
-Aslam Khan - [@ak_aslamkhan\_\_](https://twitter.com/ak_aslamkhan__) - akkhans8125@gmail.com <br />
-Github Link: [https://github.com/akaslamkhan](https://github.com/akaslamkhan)
-
-Kelvin Parmar - [@Kelvinparmar12](https://twitter.com/Kelvinparmar12) - pkelvin123456789@gmail.com <br />
-Github Link: [https://github.com/kelvinparmar](https://github.com/kelvinparmar)
-
 Suhas Khobragade - [@suhaasya](https://twitter.com/suhaasya) - suhaskhobragade19@gmail.com <br />
-Github Link: [https://github.com/suhaasya/skillvalley](https://github.com/suhaasya/skillvalley)
+Github Link: [https://github.com/suhaasya](https://github.com/suhaasya)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

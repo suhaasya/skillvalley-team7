@@ -2,12 +2,6 @@
 
 Thanks for your interest in this project.
 
-## Project description
-
-This project is part of skill valley cohort.
-
-- https://github.com/suhaasya/skillvalley-team7
-
 ## Submitting a contribution
 
 1. If this is your first time contributing to the project, fork the repo by clicking on the `Fork` button in the top-right corner of the git repo page.
@@ -71,15 +65,8 @@ git push origin my_new_branch
 
 8. We would like to encourage you to open a pull request early and use `Create draft pull request` option. This allows others to check the PR, get early feedback, and helps create a better end product.
 
-
 9. Convert PR to `Ready for review` once the PR is ready.
 
 ## Contact
-
-Anjali Chauhan - [@anjalii1102](https://twitter.com/anjalii1102) - ac.chauhan1102@gmail.com <br />
-
-Aslam Khan - [@ak_aslamkhan\_\_](https://twitter.com/ak_aslamkhan__) - akkhans8125@gmail.com <br />
-
-Kelvin Parmar - [@Kelvinparmar12](https://twitter.com/Kelvinparmar12) - pkelvin123456789@gmail.com <br />
 
 Suhas Khobragade - [@suhaasya](https://twitter.com/suhaasya) - suhaskhobragade19@gmail.com <br />
