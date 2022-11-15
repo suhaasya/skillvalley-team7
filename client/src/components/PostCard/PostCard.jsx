@@ -21,16 +21,19 @@ import { db } from "../../firebase.config";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalState";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function PostCard({
   authorName,
   showDelete,
+  authorId,
   id,
   publishedDate,
   message,
   likes,
 }) {
   const { user } = useSelector((state) => state.user);
+  const navigate = useNavigate();
   const { setState, setLoading } = useContext(GlobalContext);
 
   const [showMenu, setShowMenu] = useState(false);
@@ -92,12 +95,25 @@ export default function PostCard({
     setState(false);
   }
 
+  console.log(authorId);
+
+  function handleClick(id) {
+    navigate(`/${id}`);
+  }
+
   return (
     <li className="py-2 px-2 md:px-0 sm:py-8 border-solid border-b-2 border-light_gray mb-4 cursor-pointer">
       <div className="flex items-center">
-        <Avatar {...stringAvatar(authorName)} />
+        <Avatar
+          {...stringAvatar(authorName)}
+          onClick={handleClick}
+          id={authorId}
+        />
         <div className="ml-2">
-          <h5 className="text-sm font-medium hover-underline-animation ">
+          <h5
+            className="text-sm font-medium hover-underline-animation "
+            onClick={() => handleClick(authorId)}
+          >
             {authorName}
           </h5>
           <p className="text-xs text-gray">Shared a post • {publishedDate}</p>
