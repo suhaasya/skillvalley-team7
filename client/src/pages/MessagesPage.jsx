@@ -1,15 +1,14 @@
 import React from "react";
-import { useContext } from "react";
+import { useSelector } from "react-redux";
 import ChatSection from "../components/ChatSection";
 import ChatSidebar from "../components/ChatSidebar";
 import Layout from "../components/Layout";
 import Spinner from "../components/Spinner";
-import { GlobalContext } from "../context/GlobalState";
 
 export default function MessagesPage() {
-  const { loading } = useContext(GlobalContext);
+  const { user, loading } = useSelector((state) => state.user);
 
-  if (loading) {
+  if (loading || !user.firstName) {
     return <Spinner />;
   }
 

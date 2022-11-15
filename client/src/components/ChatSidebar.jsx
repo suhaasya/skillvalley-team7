@@ -13,11 +13,11 @@ import {
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useContext } from "react";
+import { useSelector } from "react-redux";
 import ProfileCard from "../components/ProfileCard";
 import SearchBar from "../components/SearchBar";
 import { AuthContext } from "../context/AuthContext";
 import { ChatContext } from "../context/ChatContext";
-import { GlobalContext } from "../context/GlobalState";
 import { db } from "../firebase.config";
 
 export default function ChatSidebar() {
@@ -27,7 +27,8 @@ export default function ChatSidebar() {
   const [err, setErr] = useState(false);
 
   const { currentUser } = useContext(AuthContext);
-  const { user: currentUserData } = useContext(GlobalContext);
+  const { user: currentUserData } = useSelector((state) => state.user);
+
   const { dispatch } = useContext(ChatContext);
 
   useEffect(() => {

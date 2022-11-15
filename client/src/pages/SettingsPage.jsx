@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Layout from "../components/Layout";
 import SettingsCard from "../components/SettingsCard";
 import Input from "../components/Input";
@@ -10,13 +10,19 @@ import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useContext } from "react";
+import { useSelector } from "react-redux";
 import { GlobalContext } from "../context/GlobalState";
 
 export default function SettingsPage() {
   const auth = getAuth();
-  const { user, setUser, postsData, loading } = useContext(GlobalContext);
+  const { setState } = useContext(GlobalContext);
+
+  const { user, loading } = useSelector((state) => state.user);
+  const { posts } = useSelector((state) => state.posts);
+
   const navigate = useNavigate();
+
+  const [currentUserData, setCurrentUserData] = useState(user);
 
   const [passwordSettings, setPasswordSettings] = useState({
     currentPassword: "",
@@ -26,22 +32,26 @@ export default function SettingsPage() {
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setUser((prev) => ({ ...prev, [name]: value }));
+    setCurrentUserData((prev) => ({ ...prev, [name]: value }));
     setPasswordSettings((prev) => ({ ...prev, [name]: value }));
   }
 
   async function updateUserData(e) {
     e.preventDefault();
+    setState(true);
+
     const userRef = doc(db, "users", auth.currentUser?.uid);
     const id = toast.loading("Updating...");
 
-    await updateDoc(userRef, { ...user });
+    await updateDoc(userRef, { ...currentUserData });
     toast.update(id, {
       render: "Successfully Changed",
       type: "success",
       isLoading: false,
       autoClose: 1000,
     });
+
+    setState(false);
   }
 
   function changePassword(e) {
@@ -82,7 +92,7 @@ export default function SettingsPage() {
         .then(() => {
           deleteUserData(user._id);
 
-          postsData.forEach((post) => {
+          posts.forEach((post) => {
             if (post.user.uid === user._id) {
               deleteUserPost(post._id);
             }
@@ -128,14 +138,14 @@ export default function SettingsPage() {
               label={"First Name"}
               required={true}
               name={"firstName"}
-              value={user.firstName}
+              value={currentUserData.firstName}
               onChange={handleChange}
             />
             <Input
               label={"Last Name"}
               required={true}
               name={"lastName"}
-              value={user.lastName}
+              value={currentUserData.lastName}
               onChange={handleChange}
             />
             <div className="col-span-2">
@@ -144,7 +154,7 @@ export default function SettingsPage() {
                 label={"Brief bio"}
                 name={"briefBio"}
                 required={true}
-                value={user.briefBio}
+                value={currentUserData.briefBio}
                 onChange={handleChange}
               />
               <p className="text-xs m-1 text-gray">

@@ -20,6 +20,7 @@ import {
 import { db } from "../../firebase.config";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalState";
+import { useSelector } from "react-redux";
 
 export default function PostCard({
   authorName,
@@ -29,11 +30,14 @@ export default function PostCard({
   message,
   likes,
 }) {
-  const { user, setState, setLoading } = useContext(GlobalContext);
+  const { user } = useSelector((state) => state.user);
+  const { setState, setLoading } = useContext(GlobalContext);
 
   const [showMenu, setShowMenu] = useState(false);
-  const [bookmarked, setBookmarked] = useState(user.bookmarks.includes(id));
-  const [like, setLike] = useState(likes.includes(user._id));
+  const [bookmarked, setBookmarked] = useState(
+    user && user.bookmarks.includes(id)
+  );
+  const [like, setLike] = useState(likes && likes.includes(user && user._id));
 
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
