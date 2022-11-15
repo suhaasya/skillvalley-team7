@@ -15,13 +15,14 @@ import Logo from "./Logo";
 import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
-import { useContext } from "react";
-import { GlobalContext } from "../context/GlobalState";
+import { useSelector } from "react-redux";
 
 export default function Navbar() {
   const auth = getAuth();
   const navigate = useNavigate();
-  const { user, usersData, loading } = useContext(GlobalContext);
+  const { user, loading } = useSelector((state) => state.user);
+  const usersData = useSelector((state) => state.users.users);
+
   const [popUpMenu, setPopUpMenu] = useState(false);
   const [searchResult, setSearchResult] = useState(false);
   const [searchUsersData, setSearchUsersData] = useState(usersData);
@@ -68,9 +69,10 @@ export default function Navbar() {
       });
   }
 
-  if (loading) {
+  if (loading || !user.firstName) {
     return <Spinner />;
   }
+
   return (
     <nav
       className="flex items-center px-[3%] md:px-[5%] py-[0.5%] border-solid border-b-2 border-light_gray lg:px-[12%]"
@@ -97,10 +99,12 @@ export default function Navbar() {
             Profile Card shown in search result
             */}
 
-            {searchUsersData.length > 0 ? (
+            {searchUsersData?.length > 0 ? (
               searchUsersData.map((user, i) => (
                 <ProfileCard
-                  userName={`${user.firstName.trim()} ${user.lastName.trim()}`}
+                  userName={`${user && user?.firstName.trim()} ${
+                    user && user?.lastName.trim()
+                  }`}
                   userBio={user.description}
                   key={i}
                 />
@@ -118,7 +122,9 @@ export default function Navbar() {
           >
             <Avatar
               {...stringAvatar(
-                `${user?.firstName.trim()} ${user?.lastName.trim()}`
+                `${user && user?.firstName.trim()} ${
+                  user && user?.lastName.trim()
+                }`
               )}
             />
           </button>

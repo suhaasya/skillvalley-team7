@@ -12,9 +12,13 @@ import Spinner from "../components/Spinner";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 import { GlobalContext } from "../context/GlobalState";
+import { useSelector } from "react-redux";
 
 export default function HomePage() {
-  const { user, postsData, loading, setState } = useContext(GlobalContext);
+  const { user, loading } = useSelector((state) => state.user);
+  const { posts } = useSelector((state) => state.posts);
+
+  const { setState } = useContext(GlobalContext);
   const [post, setPost] = useState("");
 
   function handleChange(e) {
@@ -63,9 +67,10 @@ export default function HomePage() {
     }
   }
 
-  if (loading || !user) {
+  if (loading || !user.firstName) {
     return <Spinner />;
   }
+
   return (
     <Layout home={true}>
       <form
@@ -87,17 +92,18 @@ export default function HomePage() {
         </div>
       </form>
       <ul className="md:px-24 py-2">
-        {postsData.map((post) => (
-          <PostCard
-            authorName={`${post.user.firstName.trim()} ${post.user.lastName.trim()}`}
-            publishedDate={post.post.date}
-            message={post.post.message}
-            likes={post.post.likes}
-            id={post._id}
-            key={post._id}
-            showDelete={user._id === post.user.uid}
-          />
-        ))}
+        {posts &&
+          posts.map((post) => (
+            <PostCard
+              authorName={`${post.user.firstName.trim()} ${post.user.lastName.trim()}`}
+              publishedDate={post.post.date}
+              message={post.post.message}
+              likes={post.post.likes}
+              id={post._id}
+              key={post._id}
+              showDelete={user._id === post.user.uid}
+            />
+          ))}
         <li className="mb-12 text-xs pb-4 text-center">
           That’s it so far. Hope you got some work inspiration from your
           network! :)

@@ -11,68 +11,79 @@ import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase.config";
+import { setError, setUser } from "../redux/features/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setPosts } from "../redux/features/postsSlice";
+import { setUsers } from "../redux/features/usersSlice";
 
 export const GlobalContext = createContext({});
 
 // Provider Component
 export const GlobalProvider = ({ children }) => {
   const auth = getAuth();
+  const dispatch = useDispatch();
   const provider = new GoogleAuthProvider();
-
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [usersData, setUsersData] = useState(null);
-  const [userPostsData, setUserPostsData] = useState(null);
-  const [postsData, setPostsData] = useState(null);
+
+  const users = useSelector((state) => state.users);
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
-      // All Posts Data
-      const postsref = collection(db, "posts");
-      const q = query(postsref, orderBy("post", "desc"));
-      const postsSnap = await getDocs(q);
-      const posts = [];
-      postsSnap.forEach((doc) => {
-        posts.push({ _id: doc.id, ...doc.data() });
-      });
-      setPostsData(posts);
-
-      // All Users Data
-      const usersSnap = await getDocs(collection(db, "users"));
-      const users = [];
-      usersSnap.forEach((doc) => {
-        users.push({ _id: doc.id, ...doc.data() });
-      });
-      setUsersData(users);
-
-      // Logged in User Data
-      const userRef = doc(db, "users", auth.currentUser?.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        setUser({ _id: userSnap.id, ...userSnap.data() });
+    async function fetchUser() {
+      try {
+        const userRef = doc(db, "users", auth.currentUser?.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          dispatch(setUser(userSnap.data()));
+        } else {
+          dispatch(setError("user doesnt exist"));
+        }
+      } catch (error) {
+        dispatch(setError(error.message));
       }
-
-      // User Posts Data
-      const userPosts = posts.filter(
-        (post) => post.user.uid === auth.currentUser?.uid
-      );
-
-      setUserPostsData(userPosts);
-
-      setLoading(false);
     }
-    fetchData();
-  }, [auth.currentUser?.uid, state]);
+
+    async function fetchUsers() {
+      try {
+        const usersSnap = await getDocs(collection(db, "users"));
+        const users = [];
+        usersSnap.forEach((doc) => {
+          users.push({ _id: doc.id, ...doc.data() });
+        });
+
+        dispatch(setUsers(users));
+      } catch (error) {
+        dispatch(setError(error.message));
+      }
+    }
+
+    async function fetchPosts() {
+      try {
+        const postsref = collection(db, "posts");
+        const q = query(postsref, orderBy("post", "desc"));
+        const postsSnap = await getDocs(q);
+        const posts = [];
+        postsSnap.forEach((doc) => {
+          posts.push({ _id: doc.id, ...doc.data() });
+        });
+
+        dispatch(setPosts(posts));
+      } catch (error) {
+        dispatch(setError(error.message));
+      }
+    }
+    fetchUser();
+    fetchUsers();
+    fetchPosts();
+  }, [auth.currentUser?.uid, dispatch, state]);
 
   function signWithGoogle() {
     signInWithPopup(auth, provider)
       .then((result) => {
         const userId = result.user.uid;
 
-        if (usersData.some((user) => user._id === userId)) {
+        if (users.some((user) => user._id === userId)) {
           navigate("/home");
         } else {
           navigate("/welcome");
@@ -86,11 +97,6 @@ export const GlobalProvider = ({ children }) => {
   return (
     <GlobalContext.Provider
       value={{
-        user,
-        setUser,
-        usersData,
-        userPostsData,
-        postsData,
         loading,
         setLoading,
         signWithGoogle,
