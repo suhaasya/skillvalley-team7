@@ -4,15 +4,50 @@ import Layout from "../components/Layout";
 import PostCard from "../components/PostCard/PostCard";
 import Spinner from "../components/Spinner";
 import stringAvatar from "../utils/stringAvatar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { getAuth } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase.config";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
-  const { user, loading } = useSelector((state) => state.user);
+  const auth = getAuth();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState(null);
+
   const { posts } = useSelector((state) => state.posts);
+  const { user } = useSelector((state) => state.user);
 
-  const userPosts = posts.filter((post) => post.user.uid === user._id);
+  const { id } = useParams();
 
-  if (loading || !user.firstName) {
+  const userPosts = posts.filter((post) => post.user.uid === profile?._id);
+
+  useEffect(() => {
+    async function fetchUser() {
+      setLoading(true);
+      try {
+        const userRef = doc(db, "users", id || auth.currentUser?.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setProfile(userSnap.data());
+          setLoading(false);
+        } else {
+          toast.error("user not found");
+          setLoading(false);
+        }
+      } catch (error) {
+        toast.error(error.message);
+        setLoading(false);
+      }
+    }
+    fetchUser();
+  }, [auth.currentUser?.uid, dispatch, id]);
+
+  if (loading || !profile || !user.firstName) {
     return <Spinner />;
   }
 
@@ -21,14 +56,14 @@ export default function ProfilePage() {
       <div className="flex justify-between items-start p-8 bg-light_white border-solid border-b border-light_gray">
         <div>
           <h3 className="text-3xl font-semibold">
-            {user.firstName} {user.lastName}
+            {profile.firstName} {profile.lastName}
           </h3>
-          <p className="text-xl">{user.briefBio}</p>
+          <p className="text-xl">{profile.briefBio}</p>
         </div>
         <div className="block sm:hidden">
           <Avatar
             {...stringAvatar(
-              `${user?.firstName.trim()} ${user?.lastName.trim()}`
+              `${profile?.firstName.trim()} ${profile?.lastName.trim()}`
             )}
           />
         </div>
@@ -36,7 +71,7 @@ export default function ProfilePage() {
           <Avatar
             type={"secondary"}
             {...stringAvatar(
-              `${user?.firstName.trim()} ${user?.lastName.trim()}`
+              `${profile?.firstName.trim()} ${profile?.lastName.trim()}`
             )}
           />
         </div>
@@ -56,7 +91,7 @@ export default function ProfilePage() {
                 likes={post.post.likes}
                 id={post._id}
                 key={post._id}
-                showDelete={user._id === post.user.uid}
+                showDelete={profile._id === post.user.uid}
               />
             ))}
           <li className="mb-4 text-xs pb-4 text-center">

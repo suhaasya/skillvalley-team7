@@ -69,6 +69,10 @@ export default function Navbar() {
       });
   }
 
+  function selectUser(id) {
+    navigate(`/${id}`);
+  }
+
   if (loading || !user.firstName) {
     return <Spinner />;
   }
@@ -106,7 +110,9 @@ export default function Navbar() {
                     user && user?.lastName.trim()
                   }`}
                   userBio={user.description}
+                  id={user._id}
                   key={i}
+                  onClick={selectUser}
                 />
               ))
             ) : (

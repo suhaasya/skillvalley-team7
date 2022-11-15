@@ -102,6 +102,7 @@ export default function HomePage() {
               id={post._id}
               key={post._id}
               showDelete={user._id === post.user.uid}
+              authorId={post.user.uid}
             />
           ))}
         <li className="mb-12 text-xs pb-4 text-center">
