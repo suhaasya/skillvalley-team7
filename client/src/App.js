@@ -51,6 +51,7 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/welcome" element={<WelcomePage />} />
+                <Route path="/:id" element={<ProfilePage />} />
                 <Route path="/*" element={<PageDoesNotExit />} />
               </Routes>
             </div>

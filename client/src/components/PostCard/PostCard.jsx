@@ -35,7 +35,7 @@ export default function PostCard({
 
   const [showMenu, setShowMenu] = useState(false);
   const [bookmarked, setBookmarked] = useState(
-    user && user.bookmarks.includes(id)
+    user && user?.bookmarks?.includes(id)
   );
   const [like, setLike] = useState(likes && likes.includes(user && user._id));
 

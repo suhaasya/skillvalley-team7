@@ -22,7 +22,7 @@ export default function ProfileCard({
           userName !== "undefined undefined" &&
           "cursor-pointer hover:bg-dark_white"
         } flex items-center gap-1`}
-        onClick={() => onClick()}
+        onClick={() => onClick(id)}
       >
         {userName !== "undefined undefined" && (
           <Avatar {...stringAvatar(userName)} />
