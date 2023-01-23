@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Button({ children, type, onClick, size }) {
+export default function Button({ children, type, onClick, size, disabled }) {
   return (
     <button
       className={`${size === "medium" ? " " : "mt-4 text-xs"} font-medium ${
@@ -10,6 +10,7 @@ export default function Button({ children, type, onClick, size }) {
           ? "bg-green"
           : "bg-black"
       } text-white px-3 py-1 rounded`}
+      disabled={disabled}
       onClick={onClick}
     >
       {children}

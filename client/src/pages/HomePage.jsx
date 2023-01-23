@@ -4,71 +4,68 @@ import PostCard from "../components/PostCard/PostCard";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useState } from "react";
-import { v4 as uuid } from "uuid";
+
 import getDate from "../utils/getDate";
-import { setDoc, doc } from "firebase/firestore";
-import { db } from "../firebase.config";
+import { serverTimestamp } from "firebase/firestore";
+import { auth } from "../firebase.config";
 import Spinner from "../components/Spinner";
-import { toast } from "react-toastify";
-import { useContext } from "react";
-import { GlobalContext } from "../context/GlobalState";
-import { useSelector } from "react-redux";
+import usePostsData, { useAddPostData } from "../hooks/usePostsData";
+import useUserData from "../hooks/useUserData";
 
 export default function HomePage() {
-  const { user, loading } = useSelector((state) => state.user);
-  const { posts } = useSelector((state) => state.posts);
+  const { postsLoader, postsError, postsData } = usePostsData();
+  const {
+    userLoader,
+    userError,
+    userData: user,
+  } = useUserData(auth.currentUser?.uid);
+  const { mutate: addPost, isLoading } = useAddPostData();
 
-  const { setState } = useContext(GlobalContext);
   const [post, setPost] = useState("");
 
   function handleChange(e) {
     setPost(e.target.value);
   }
 
-  async function sharePost(e) {
-    e.preventDefault();
-    if (post.length > 0) {
-      const id = toast.loading("Posting...");
-      setState(true);
-      try {
-        const postData = {
-          user: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            uid: user._id,
-          },
-          post: {
-            message: post,
+  const postDetails = {
+    user: {
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      uid: auth.currentUser?.uid,
+    },
+    post: {
+      message: post,
+      likes: [],
+      date: getDate(),
+    },
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
 
-            likes: [],
-            date: getDate(),
-          },
-        };
-        await setDoc(doc(db, "posts", uuid()), postData);
-        setPost("");
-        toast.update(id, {
-          render: "Successfully Posted",
-          type: "success",
-          isLoading: false,
-          autoClose: 1000,
-        });
-        setState(false);
-      } catch (error) {
-        toast.update(id, {
-          render: error.message,
-          type: "error",
-          isLoading: false,
-          autoClose: 1000,
-        });
-        setState(false);
-      }
-    } else {
-      toast.error("Post cant be empty");
-    }
+  function sharePost(e) {
+    e.preventDefault();
+
+    const data = {
+      userId: auth?.currentUser?.uid,
+      postData: postDetails,
+    };
+
+    addPost(data);
+    setPost("");
   }
 
-  if (loading || !user.firstName) {
+  if (userLoader || postsLoader) {
     return <Spinner />;
+  }
+
+  if (postsError || userError) {
+    if (userError) {
+      return <p>{userError.message}</p>;
+    }
+
+    if (postsError) {
+      return <p>{postsError.message}</p>;
+    }
   }
 
   return (
@@ -86,14 +83,15 @@ export default function HomePage() {
           onChange={handleChange}
         />
         <div className="text-right mt-4">
-          <Button type="success" size={"medium"}>
+          <Button type="success" size={"medium"} disabled={isLoading}>
             Share
           </Button>
         </div>
       </form>
+      {isLoading && <p>loading...</p>}
       <ul className="md:px-24 py-2">
-        {posts &&
-          posts.map((post) => (
+        {postsData &&
+          postsData.map((post) => (
             <PostCard
               authorName={`${post.user.firstName.trim()} ${post.user.lastName.trim()}`}
               publishedDate={post.post.date}

@@ -10,18 +10,13 @@ import {
 } from "react-icons/ri";
 import stringAvatar from "../../utils/stringAvatar";
 import "./PostCard.css";
-import {
-  doc,
-  deleteDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { db } from "../../firebase.config";
 import { useContext } from "react";
 import { GlobalContext } from "../../context/GlobalState";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useDeletePostData } from "../../hooks/usePostsData";
 
 export default function PostCard({
   authorName,
@@ -34,7 +29,7 @@ export default function PostCard({
 }) {
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const { setState, setLoading } = useContext(GlobalContext);
+  const { setState } = useContext(GlobalContext);
 
   const [showMenu, setShowMenu] = useState(false);
   const [bookmarked, setBookmarked] = useState(
@@ -44,21 +39,6 @@ export default function PostCard({
 
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
-  }
-
-  async function deletePost() {
-    setLoading(true);
-    setState(true);
-    const userRef = doc(db, "users", user._id);
-    if (bookmarked) {
-      await updateDoc(userRef, {
-        bookmarks: arrayRemove(id),
-      });
-    }
-    const postRef = doc(db, "posts", id);
-    await deleteDoc(postRef);
-    setState(false);
-    setLoading(false);
   }
 
   async function handleLike() {
@@ -95,10 +75,23 @@ export default function PostCard({
     setState(false);
   }
 
-  console.log(authorId);
-
   function handleClick(id) {
     navigate(`/${id}`);
+  }
+
+  const { mutate, isLoading } = useDeletePostData();
+
+  function deletePost() {
+    const data = {
+      userId: authorId,
+      postId: id,
+    };
+
+    mutate(data);
+  }
+
+  if (isLoading) {
+    return <li>loading...</li>;
   }
 
   return (

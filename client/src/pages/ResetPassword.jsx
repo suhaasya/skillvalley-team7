@@ -6,11 +6,10 @@ import { toast } from "react-toastify";
 import Button from "../components/Button";
 import FormContainer from "../components/FormContainer";
 import Input from "../components/Input";
-import useQuery from "../hooks/useQuery";
-
+import useQueryLocation from "../hooks/useQuery";
 export default function ResetPassword() {
   const auth = getAuth();
-  const query = useQuery();
+  const query = useQueryLocation();
   const navigate = useNavigate();
 
   const oobCode = query.get("oobCode");
