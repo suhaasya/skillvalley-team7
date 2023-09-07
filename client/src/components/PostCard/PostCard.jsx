@@ -1,6 +1,6 @@
 import Avatar from "../Avatar";
 import React, { useState } from "react";
-import { GoKebabVertical } from "react-icons/go";
+import { CiMenuKebab } from "react-icons/ci";
 import { MdOutlineInsertComment } from "react-icons/md";
 import {
   RiThumbUpLine,
@@ -10,84 +10,67 @@ import {
 } from "react-icons/ri";
 import stringAvatar from "../../utils/stringAvatar";
 import "./PostCard.css";
-import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import { db } from "../../firebase.config";
-import { useContext } from "react";
-import { GlobalContext } from "../../context/GlobalState";
-import { useSelector } from "react-redux";
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  getDoc,
+} from "firebase/firestore";
+import { auth, db } from "../../firebase.config";
 import { useNavigate } from "react-router-dom";
-import { useDeletePostData } from "../../hooks/usePostsData";
+import {
+  useBookmarkPost,
+  useDeletePostData,
+  useGetLikeStatus,
+  useLikePost,
+  useRemoveBookmarkPost,
+  useRemoveLike,
+} from "../../hooks/usePostsData";
+import useUserData from "../../hooks/useUserData";
 
-export default function PostCard({
-  authorName,
-  showDelete,
-  authorId,
-  id,
-  publishedDate,
-  message,
-  likes,
-}) {
-  const { user } = useSelector((state) => state.user);
+export default function PostCard({ data }) {
+  const userId = auth.currentUser?.uid;
   const navigate = useNavigate();
-  const { setState } = useContext(GlobalContext);
-
   const [showMenu, setShowMenu] = useState(false);
-  const [bookmarked, setBookmarked] = useState(
-    user && user?.bookmarks?.includes(id)
-  );
-  const [like, setLike] = useState(likes && likes.includes(user && user._id));
+  const showDelete = userId === data?.user?._id;
+  const likes = data?.likes;
+  const likeRef = useGetLikeStatus(userId, data?._id);
+  const like = likeRef?.data?.exists();
+  const { userData: user } = useUserData(userId);
+  const { mutate: likePost } = useLikePost(data?._id);
+  const { mutate: removeLike } = useRemoveLike(data?._id);
+  const { mutate: bookmarkPost } = useBookmarkPost(data?._id);
+  const { mutate: removeBookmarkPost } = useRemoveBookmarkPost(data?.id);
+
+  const bookmarked = user?.bookmarks?.includes(data?._id);
 
   function handleShowMenu() {
     setShowMenu((prev) => !prev);
   }
 
   async function handleLike() {
-    setState(true);
-    setLike((prev) => !prev);
-    const postsRef = doc(db, "posts", id);
+    likePost({ userId, postId: data?._id });
+  }
 
-    if (likes.includes(user._id)) {
-      await updateDoc(postsRef, {
-        "post.likes": arrayRemove(user._id),
-      });
-    } else {
-      await updateDoc(postsRef, {
-        "post.likes": arrayUnion(user._id),
-      });
-    }
-    setState(false);
+  async function handleRemoveLike() {
+    removeLike({ userId, postId: data?._id });
   }
 
   async function handleBookmark() {
-    setState(true);
-    setBookmarked((prev) => !prev);
-    const userRef = doc(db, "users", user._id);
-
-    if (user.bookmarks.includes(id)) {
-      await updateDoc(userRef, {
-        bookmarks: arrayRemove(id),
-      });
-    } else {
-      await updateDoc(userRef, {
-        bookmarks: arrayUnion(id),
-      });
-    }
-    setState(false);
+    bookmarked
+      ? removeBookmarkPost({ userId, postId: data?._id })
+      : bookmarkPost({ userId, postId: data?._id });
   }
 
-  function handleClick(id) {
-    navigate(`/${id}`);
+  function handleClick() {
+    navigate(`/${data?.user?._id}`);
   }
 
   const { mutate, isLoading } = useDeletePostData();
 
-  function deletePost() {
-    const data = {
-      userId: authorId,
-      postId: id,
-    };
-
-    mutate(data);
+  async function deletePost() {
+    mutate({ userId: userId, postId: data._id });
   }
 
   if (isLoading) {
@@ -98,21 +81,22 @@ export default function PostCard({
     <li className="py-2 px-2 md:px-0 sm:py-8 border-solid border-b-2 border-light_gray mb-4 cursor-pointer">
       <div className="flex items-center">
         <Avatar
-          {...stringAvatar(authorName)}
+          {...stringAvatar(`${data?.user?.name}`)}
           onClick={handleClick}
-          id={authorId}
         />
         <div className="ml-2">
           <h5
             className="text-sm font-medium hover-underline-animation "
-            onClick={() => handleClick(authorId)}
+            onClick={handleClick}
           >
-            {authorName}
+            {data?.user?.name}
           </h5>
-          <p className="text-xs text-gray">Shared a post • {publishedDate}</p>
+          <p className="text-xs text-gray">
+            Shared a post • {formatDate(data?.updatedAt?.seconds)}
+          </p>
         </div>
         <button className="relative ml-auto" onClick={handleShowMenu}>
-          <GoKebabVertical />
+          <CiMenuKebab />
 
           <ul
             className={
@@ -135,7 +119,7 @@ export default function PostCard({
           </ul>
         </button>
       </div>
-      <p className="leading-loose px-1 py-2 sm:px-14">{message}</p>
+      <p className="leading-loose px-1 py-2 sm:px-14">{data?.description}</p>
       <div className="flex px-1 py-2 sm:px-12 items-center gap-12 ">
         <button className="p-2 rounded-3xl hover:bg-light_green hover:text-green">
           <MdOutlineInsertComment size={"1.25rem"} />
@@ -145,7 +129,7 @@ export default function PostCard({
             className={`p-2 rounded-3xl hover:bg-light_green hover:text-green ${
               like && "text-green"
             }`}
-            onClick={handleLike}
+            onClick={likeRef?.data?.exists() ? handleRemoveLike : handleLike}
           >
             {like ? (
               <RiThumbUpFill size={"1.25rem"} />
@@ -153,7 +137,7 @@ export default function PostCard({
               <RiThumbUpLine size={"1.25rem"} />
             )}
           </button>
-          <p className="p-2 text-sm">{likes.length}</p>
+          <p className="p-2 text-sm">{likes}</p>
         </div>
         <button
           className="p-2 rounded-3xl hover:bg-light_green hover:text-green"
@@ -178,3 +162,16 @@ PostCard.defaultProps = {
   message: "nothing",
   likes: 0,
 };
+
+function formatDate(timestampInSeconds) {
+  const date = new Date(timestampInSeconds * 1000); // Convert seconds to milliseconds
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

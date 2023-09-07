@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { doc, getDoc } from "firebase/firestore";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase.config";
+import { promiseHandler } from "../utils/promiseHandler";
 
 async function fetchUser(id) {
   const userRef = doc(db, "users", id);

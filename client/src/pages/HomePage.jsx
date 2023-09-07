@@ -2,7 +2,7 @@ import React from "react";
 import Layout from "../components/Layout";
 import PostCard from "../components/PostCard/PostCard";
 import Input from "../components/Input";
-import Button from "../components/Button";
+import Button, { Spin } from "../components/Button";
 import { useState } from "react";
 
 import getDate from "../utils/getDate";
@@ -13,12 +13,10 @@ import usePostsData, { useAddPostData } from "../hooks/usePostsData";
 import useUserData from "../hooks/useUserData";
 
 export default function HomePage() {
+  const userId = auth.currentUser?.uid;
   const { postsLoader, postsError, postsData } = usePostsData();
-  const {
-    userLoader,
-    userError,
-    userData: user,
-  } = useUserData(auth.currentUser?.uid);
+  const { userLoader, userError, userData: user } = useUserData(userId);
+
   const { mutate: addPost, isLoading } = useAddPostData();
 
   const [post, setPost] = useState("");
@@ -28,18 +26,14 @@ export default function HomePage() {
   }
 
   const postDetails = {
-    user: {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      uid: auth.currentUser?.uid,
-    },
-    post: {
-      message: post,
-      likes: [],
-      date: getDate(),
-    },
+    description: post,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
+    user: {
+      _id: userId,
+      name: user?.firstName + " " + user?.lastName,
+    },
+    likes: 0,
   };
 
   function sharePost(e) {
@@ -56,16 +50,6 @@ export default function HomePage() {
 
   if (userLoader || postsLoader) {
     return <Spinner />;
-  }
-
-  if (postsError || userError) {
-    if (userError) {
-      return <p>{userError.message}</p>;
-    }
-
-    if (postsError) {
-      return <p>{postsError.message}</p>;
-    }
   }
 
   return (
@@ -88,21 +72,16 @@ export default function HomePage() {
           </Button>
         </div>
       </form>
-      {isLoading && <p>loading...</p>}
+      {
+        <p className="flex items-start justify-center pt-4">
+          {" "}
+          {isLoading ? <Spin /> : null}{" "}
+        </p>
+      }
       <ul className="md:px-24 py-2">
-        {postsData &&
-          postsData.map((post) => (
-            <PostCard
-              authorName={`${post.user.firstName.trim()} ${post.user.lastName.trim()}`}
-              publishedDate={post.post.date}
-              message={post.post.message}
-              likes={post.post.likes}
-              id={post._id}
-              key={post._id}
-              showDelete={user._id === post.user.uid}
-              authorId={post.user.uid}
-            />
-          ))}
+        {postsData?.map((post) => (
+          <PostCard data={post} key={post._id} />
+        ))}
         <li className="mb-12 text-xs pb-4 text-center">
           That’s it so far. Hope you got some work inspiration from your
           network! :)

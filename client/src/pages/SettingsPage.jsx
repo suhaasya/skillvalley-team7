@@ -10,19 +10,13 @@ import { db } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-import { GlobalContext } from "../context/GlobalState";
 
 export default function SettingsPage() {
   const auth = getAuth();
-  const { setState } = useContext(GlobalContext);
-
-  const { user, loading } = useSelector((state) => state.user);
-  const { posts } = useSelector((state) => state.posts);
 
   const navigate = useNavigate();
 
-  const [currentUserData, setCurrentUserData] = useState(user);
+  const [currentUserData, setCurrentUserData] = useState();
 
   const [passwordSettings, setPasswordSettings] = useState({
     currentPassword: "",
@@ -38,96 +32,14 @@ export default function SettingsPage() {
 
   async function updateUserData(e) {
     e.preventDefault();
-    setState(true);
-
-    const userRef = doc(db, "users", auth.currentUser?.uid);
-    const id = toast.loading("Updating...");
-
-    await updateDoc(userRef, { ...currentUserData });
-    toast.update(id, {
-      render: "Successfully Changed",
-      type: "success",
-      isLoading: false,
-      autoClose: 1000,
-    });
-
-    setState(false);
   }
 
-  function changePassword(e) {
-    e.preventDefault();
-    if (passwordSettings.newPassword === passwordSettings.confirmNewPassword) {
-      const id = toast.loading("Updating...");
-      updatePassword(auth.currentUser, passwordSettings.newPassword)
-        .then(() => {
-          // Update successful.
-          toast.update(id, {
-            render: "Successfully Changed",
-            type: "success",
-            isLoading: false,
-            autoClose: 1000,
-          });
-        })
-        .catch((error) => {
-          // An error ocurred
-          toast.update(id, {
-            render: error.message,
-            type: "success",
-            isLoading: false,
-            autoClose: 1000,
-          });
-        });
-    } else {
-      toast.error("Passwords are not matching");
-    }
-  }
+  function changePassword(e) {}
 
-  function deleteAccount() {
-    const userAction = window.confirm("are you sure you wanna do this?");
+  function deleteAccount() {}
 
-    if (userAction) {
-      const id = toast.loading("Deleting...");
-
-      deleteUser(auth.currentUser)
-        .then(() => {
-          deleteUserData(user._id);
-
-          posts.forEach((post) => {
-            if (post.user.uid === user._id) {
-              deleteUserPost(post._id);
-            }
-          });
-
-          toast.update(id, {
-            render: "Successfully Deleted your account",
-            type: "success",
-            isLoading: false,
-            autoClose: 1000,
-          });
-          navigate("/");
-        })
-        .catch((error) => {
-          // An error ocurred
-          toast.update(id, {
-            render: error.message,
-            type: "error",
-            isLoading: false,
-            autoClose: 1000,
-          });
-        });
-    }
-  }
-
-  async function deleteUserPost(id) {
-    await deleteDoc(doc(db, "posts", id));
-  }
-  async function deleteUserData(id) {
-    await deleteDoc(doc(db, "users", id));
-  }
-
-  if (loading) {
-    return <Spinner />;
-  }
+  async function deleteUserPost(id) {}
+  async function deleteUserData(id) {}
 
   return (
     <Layout>

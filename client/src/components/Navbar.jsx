@@ -13,68 +13,31 @@ import SearchBar from "./SearchBar";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
 import { Link, useNavigate } from "react-router-dom";
-import Spinner from "./Spinner";
-import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import useUserData from "../hooks/useUserData";
+import { auth } from "../firebase.config";
 
 export default function Navbar() {
   const auth = getAuth();
   const navigate = useNavigate();
-  const { user, loading } = useSelector((state) => state.user);
-  const usersData = useSelector((state) => state.users.users);
+  const { userData: user } = useUserData(auth.currentUser?.uid);
 
   const [popUpMenu, setPopUpMenu] = useState(false);
   const [searchResult, setSearchResult] = useState(false);
-  const [searchUsersData, setSearchUsersData] = useState(usersData);
+  const [searchUsersData, setSearchUsersData] = useState();
   const [searchValue, setSearchValue] = useState("");
 
-  function handleChange(e) {
-    setPopUpMenu(false);
-    const { value } = e.target;
-    setSearchValue(value.toLowerCase());
-
-    if (value.length > 0) {
-      setSearchResult(true);
-      setSearchUsersData((prev) => {
-        return prev.filter((item) =>
-          `${item.firstName} ${item.lastName}`
-            .toLowerCase()
-            .includes(searchValue)
-        );
-      });
-    } else {
-      setSearchResult(false);
-      setSearchValue("");
-      setSearchUsersData(usersData);
-    }
-  }
+  function handleChange(e) {}
 
   function handleClick() {
-    setSearchResult(false);
     setPopUpMenu((prev) => !prev);
   }
 
-  function closeMenu() {
-    popUpMenu && setPopUpMenu(false);
-    searchResult && setSearchResult(false);
-  }
+  function closeMenu() {}
 
-  function logout() {
-    signOut(auth)
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  }
+  function logout() {}
 
   function selectUser(id) {
     navigate(`/${id}`);
-  }
-
-  if (loading || !user.firstName) {
-    return <Spinner />;
   }
 
   return (
@@ -102,38 +65,16 @@ export default function Navbar() {
             {/* 
             Profile Card shown in search result
             */}
-
-            {searchUsersData?.length > 0 ? (
-              searchUsersData.map((user, i) => (
-                <ProfileCard
-                  userName={`${user && user?.firstName.trim()} ${
-                    user && user?.lastName.trim()
-                  }`}
-                  userBio={user.description}
-                  id={user._id}
-                  key={i}
-                  onClick={selectUser}
-                />
-              ))
-            ) : (
-              <ProfileCard noUser={true} />
-            )}
           </ul>
         </div>
 
         <div className="relative">
-          <button
+          <span
             className="cursor-pointer hover:opacity-70"
             onClick={handleClick}
           >
-            <Avatar
-              {...stringAvatar(
-                `${user && user?.firstName.trim()} ${
-                  user && user?.lastName.trim()
-                }`
-              )}
-            />
-          </button>
+            <Avatar {...stringAvatar(`${user?.firstName} ${user?.lastName}`)} />
+          </span>
 
           {/* When Above Profile picture will be clicked this menu will be shown */}
           <ul

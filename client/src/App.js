@@ -14,14 +14,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import { GlobalProvider } from "./context/GlobalState";
-import { AuthContextProvider } from "./context/AuthContext";
-import { ChatContextProvider } from "./context/ChatContext";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
@@ -29,44 +22,27 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <GlobalProvider>
-          <AuthContextProvider>
-            <ChatContextProvider>
-              <div className="App">
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/home" element={<PrivateRoute />}>
-                    <Route path="/home" element={<HomePage />} />
-                  </Route>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/bookmarks" element={<BookmarksPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
 
-                  <Route path="/bookmarks" element={<PrivateRoute />}>
-                    <Route path="/bookmarks" element={<BookmarksPage />} />
-                  </Route>
+            <Route path="/profile" element={<ProfilePage />} />
 
-                  <Route path="/messages" element={<PrivateRoute />}>
-                    <Route path="/messages" element={<MessagesPage />} />
-                  </Route>
+            <Route path="/settings" element={<SettingsPage />} />
 
-                  <Route path="/profile" element={<PrivateRoute />}>
-                    <Route path="/profile" element={<ProfilePage />} />
-                  </Route>
-
-                  <Route path="/settings" element={<PrivateRoute />}>
-                    <Route path="/settings" element={<SettingsPage />} />
-                  </Route>
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/signup" element={<SignupPage />} />
-                  <Route path="/welcome" element={<WelcomePage />} />
-                  <Route path="/:id" element={<ProfilePage />} />
-                  <Route path="/*" element={<PageDoesNotExit />} />
-                </Routes>
-              </div>
-              <ToastContainer autoClose={1000} position="bottom-center" />
-            </ChatContextProvider>
-          </AuthContextProvider>
-        </GlobalProvider>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/welcome" element={<WelcomePage />} />
+            {/* <Route path="/:id" element={<ProfilePage />} /> */}
+            <Route path="/*" element={<PageDoesNotExit />} />
+          </Routes>
+        </div>
+        <ToastContainer autoClose={1000} position="bottom-center" />
       </Router>
     </QueryClientProvider>
   );

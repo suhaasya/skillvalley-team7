@@ -4,14 +4,12 @@ import Layout from "../components/Layout";
 import PostCard from "../components/PostCard/PostCard";
 import Spinner from "../components/Spinner";
 import stringAvatar from "../utils/stringAvatar";
-import { useSelector } from "react-redux";
+
 import { getAuth } from "firebase/auth";
 import useUserData from "../hooks/useUserData";
 
 export default function ProfilePage() {
   const auth = getAuth();
-
-  const { posts } = useSelector((state) => state.posts);
 
   const {
     userLoader,
@@ -19,7 +17,7 @@ export default function ProfilePage() {
     userData: profile,
   } = useUserData(auth.currentUser?.uid);
 
-  const userPosts = posts.filter((post) => post.user.uid === profile?._id);
+  // const userPosts = posts.filter((post) => post.user.uid === profile?._id);
 
   if (userError) {
     return <p>{userError.message}</p>;
@@ -60,7 +58,7 @@ export default function ProfilePage() {
         </div>
 
         <ul className="md:px-24 py-2">
-          {userPosts &&
+          {/* {userPosts &&
             userPosts.map((post) => (
               <PostCard
                 authorName={`${post.user.firstName.trim()} ${post.user.lastName.trim()}`}
@@ -71,7 +69,7 @@ export default function ProfilePage() {
                 key={post._id}
                 showDelete={profile._id === post.user.uid}
               />
-            ))}
+            ))} */}
           <li className="mb-4 text-xs pb-4 text-center">
             That’s it so far. Hope you got some work inspiration from your
             network! :)

@@ -1,6 +1,12 @@
 import React from "react";
 
-export default function Avatar({ name, bgcolor, type, imgSrc, onClick, id }) {
+export default function Avatar({
+  name,
+  bgcolor,
+  type,
+  imgSrc,
+  onClick = () => {},
+}) {
   const style = {
     backgroundColor: bgcolor,
   };
@@ -11,7 +17,7 @@ export default function Avatar({ name, bgcolor, type, imgSrc, onClick, id }) {
         type === "secondary" ? "w-44 h-44" : "w-11 h-11"
       } flex items-center justify-center p-6`}
       style={style}
-      onClick={() => onClick(id)}
+      onClick={onClick}
     >
       {imgSrc ? (
         <img src={imgSrc} alt="Profile" className="rounded-full"></img>

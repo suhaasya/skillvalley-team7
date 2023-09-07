@@ -10,8 +10,6 @@ import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import { toast } from "react-toastify";
-import { useContext } from "react";
-import { GlobalContext } from "../context/GlobalState";
 
 export default function LoginPage() {
   const auth = getAuth();
@@ -22,8 +20,6 @@ export default function LoginPage() {
     password: "",
   });
 
-  const { signWithGoogle } = useContext(GlobalContext);
-
   function handleChange(e) {
     const { name, value } = e.target;
     setLoginData((prev) => ({ ...prev, [name]: value }));
@@ -32,7 +28,7 @@ export default function LoginPage() {
   function onSubmit(e) {
     e.preventDefault();
     signInWithEmailAndPassword(auth, loginData.email, loginData.password)
-      .then((userCredential) => {
+      .then(() => {
         navigate("/home");
       })
       .catch((error) => {
@@ -46,7 +42,7 @@ export default function LoginPage() {
         <h3 className="text-2xl font-medium">Login to Scream-One</h3>
         <FcLock size={"1.5rem"} />
       </div>
-      <GoogleSignUpButton onClick={signWithGoogle} />
+      <GoogleSignUpButton onClick={() => {}} />
       <p className="text-center">or</p>
       <Input
         label="Email"
