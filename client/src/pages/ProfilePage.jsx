@@ -7,16 +7,23 @@ import stringAvatar from "../utils/stringAvatar";
 
 import { useGetUser, useGetUserPosts } from "../hooks/useUserData";
 import { auth } from "../firebase.config";
+import { useParams } from "react-router-dom";
 
 export default function ProfilePage() {
-  const userId = auth.currentUser?.uid;
+  const { id } = useParams();
+  const userId = id || auth.currentUser?.uid;
   const {
     isLoading: userLoader,
     error: userError,
     data: profile,
   } = useGetUser(userId);
 
-  const { data: postsData, isLoading, error } = useGetUserPosts(userId);
+  const {
+    data: postsData,
+    isLoading,
+    error,
+    isFetching,
+  } = useGetUserPosts(userId);
 
   if (userError) {
     return <p>{userError.message}</p>;
@@ -25,7 +32,7 @@ export default function ProfilePage() {
     return <p>{error.message}</p>;
   }
 
-  if (userLoader || isLoading) {
+  if (userLoader || isLoading || isFetching) {
     return <Spinner />;
   }
 

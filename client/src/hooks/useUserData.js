@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  collection,
   collectionGroup,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
+  or,
   query,
   runTransaction,
   setDoc,
@@ -40,7 +42,7 @@ async function getUser(id) {
 
 export function useGetUser(id) {
   const user = useQuery({
-    queryKey: ["user"],
+    queryKey: [`user-${id}`],
     queryFn: () => getUser(id),
   });
 
@@ -77,7 +79,7 @@ async function getUserPosts(id) {
 
 export function useGetUserPosts(id) {
   const userPosts = useQuery({
-    queryKey: ["userPosts"],
+    queryKey: [`userPosts-${id}`],
     queryFn: () => getUserPosts(id),
   });
 
@@ -152,4 +154,37 @@ export function useDeleteUser(user) {
       toast.error(error.message);
     },
   });
+}
+
+async function searchUserAccounts(value) {
+  const users = [];
+  try {
+    const snap = await getDocs(
+      query(
+        collection(db, "users"),
+        or(where("firstName", "==", value), where("lastName", "==", value))
+      )
+    );
+
+    snap.forEach(async (doc) => {
+      users.push({ _id: doc.id, ...doc.data() });
+    });
+  } catch (error) {
+    return new Promise((resolve, reject) => {
+      reject(error);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    resolve(users);
+  });
+}
+
+export function useSearchUsers(query) {
+  const users = useQuery({
+    queryKey: [`user-${query}`],
+    queryFn: () => searchUserAccounts(query),
+  });
+
+  return users;
 }

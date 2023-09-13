@@ -13,7 +13,7 @@ import SearchBar from "./SearchBar";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
 import { Link, useNavigate } from "react-router-dom";
-import { useGetUser } from "../hooks/useUserData";
+import { useGetUser, useSearchUsers } from "../hooks/useUserData";
 import { auth } from "../firebase.config";
 import { toast } from "react-toastify";
 
@@ -26,14 +26,20 @@ export default function Navbar() {
   const [searchResult, setSearchResult] = useState(false);
   const [searchUsersData, setSearchUsersData] = useState();
   const [searchValue, setSearchValue] = useState("");
+  const { data } = useSearchUsers(searchValue);
+  console.log(data);
 
-  function handleChange(e) {}
+  function handleChange(e) {
+    setSearchValue(e.target.value);
+  }
 
   function handleClick() {
     setPopUpMenu((prev) => !prev);
   }
 
-  function closeMenu() {}
+  function closeMenu() {
+    setSearchResult(false);
+  }
 
   async function logout() {
     try {
@@ -61,6 +67,9 @@ export default function Navbar() {
           <SearchBar
             onChange={handleChange}
             value={searchValue}
+            onKeyDown={() => {
+              setSearchResult(true);
+            }}
             setValue={setSearchValue}
           />
           <ul
@@ -73,6 +82,21 @@ export default function Navbar() {
             {/* 
             Profile Card shown in search result
             */}
+
+            {data?.length ? (
+              data?.map((user) => (
+                <ProfileCard
+                  userName={`${user.firstName} ${user.lastName}`}
+                  userBio={user.briefBio}
+                  key={user._id}
+                  onClick={() => {
+                    navigate(`/users/${user._id}`);
+                  }}
+                />
+              ))
+            ) : (
+              <ProfileCard noUser={true} />
+            )}
           </ul>
         </div>
 

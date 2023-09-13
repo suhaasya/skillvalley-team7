@@ -66,7 +66,7 @@ export default function PostCard({ data }) {
   }
 
   function handleClick() {
-    navigate(`/${data?.user?._id}`);
+    navigate(`/users/${data?.user?._id}`);
   }
 
   const { mutate: deletePostById, isLoading } = useDeletePost();
