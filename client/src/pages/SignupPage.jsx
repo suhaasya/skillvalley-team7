@@ -23,6 +23,7 @@ export default function SignupPage() {
   async function onSubmit(e) {
     e.preventDefault();
     setLoading(true);
+
     try {
       await createUserWithEmailAndPassword(
         auth,
@@ -58,7 +59,7 @@ export default function SignupPage() {
         label={"Password"}
       />
       <div className="text-center">
-        <Button type="success" size="medium" loading={loading}>
+        <Button type="success" size="medium" isLoading={loading}>
           Join Scream-One
         </Button>
       </div>

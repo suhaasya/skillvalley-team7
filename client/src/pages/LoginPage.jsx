@@ -10,10 +10,12 @@ import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import { toast } from "react-toastify";
+import { isUserExists } from "../utils/firebaseFunctions";
 
 export default function LoginPage() {
   const auth = getAuth();
   const navigate = useNavigate();
+  const [loader, setLoader] = useState(false);
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -27,13 +29,24 @@ export default function LoginPage() {
 
   function onSubmit(e) {
     e.preventDefault();
+    setLoader(true);
+
     signInWithEmailAndPassword(auth, loginData.email, loginData.password)
-      .then(() => {
-        navigate("/home");
+      .then(async (user) => {
+        const isValidUser = await isUserExists(user?.user?.uid);
+
+        if (isValidUser) {
+          navigate("/home");
+          return;
+        }
+
+        navigate("/welcome");
       })
       .catch((error) => {
         toast.error(error.message);
       });
+
+    setLoader(false);
   }
 
   return (
@@ -63,7 +76,7 @@ export default function LoginPage() {
             Forgot Password
           </span>
         </Link>
-        <Button type="success" size="medium">
+        <Button type="success" size="medium" isLoading={loader}>
           Login
         </Button>
       </div>

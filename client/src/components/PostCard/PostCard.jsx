@@ -21,27 +21,29 @@ import { auth, db } from "../../firebase.config";
 import { useNavigate } from "react-router-dom";
 import {
   useBookmarkPost,
-  useDeletePostData,
+  useDeletePost,
   useGetLikeStatus,
   useLikePost,
   useRemoveBookmarkPost,
   useRemoveLike,
 } from "../../hooks/usePostsData";
-import useUserData from "../../hooks/useUserData";
+import { useGetUser } from "../../hooks/useUserData";
 
 export default function PostCard({ data }) {
   const userId = auth.currentUser?.uid;
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
+
   const showDelete = userId === data?.user?._id;
   const likes = data?.likes;
   const likeRef = useGetLikeStatus(userId, data?._id);
   const like = likeRef?.data?.exists();
-  const { userData: user } = useUserData(userId);
+  const { data: user } = useGetUser(userId);
   const { mutate: likePost } = useLikePost(data?._id);
   const { mutate: removeLike } = useRemoveLike(data?._id);
   const { mutate: bookmarkPost } = useBookmarkPost(data?._id);
-  const { mutate: removeBookmarkPost } = useRemoveBookmarkPost(data?.id);
+  const { mutate: removeBookmarkPost, isLoading: rmBmLoader } =
+    useRemoveBookmarkPost(data?._id);
 
   const bookmarked = user?.bookmarks?.includes(data?._id);
 
@@ -67,10 +69,10 @@ export default function PostCard({ data }) {
     navigate(`/${data?.user?._id}`);
   }
 
-  const { mutate, isLoading } = useDeletePostData();
+  const { mutate: deletePostById, isLoading } = useDeletePost();
 
   async function deletePost() {
-    mutate({ userId: userId, postId: data._id });
+    deletePostById({ userId: userId, postId: data._id });
   }
 
   if (isLoading) {
@@ -129,7 +131,7 @@ export default function PostCard({ data }) {
             className={`p-2 rounded-3xl hover:bg-light_green hover:text-green ${
               like && "text-green"
             }`}
-            onClick={likeRef?.data?.exists() ? handleRemoveLike : handleLike}
+            onClick={like ? handleRemoveLike : handleLike}
           >
             {like ? (
               <RiThumbUpFill size={"1.25rem"} />

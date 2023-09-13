@@ -13,72 +13,151 @@ import {
   runTransaction,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
-import { v4 as uuid } from "uuid";
+
 import { db } from "../firebase.config";
 
-async function fetchPosts() {
+async function getAllPosts() {
+  const posts = [];
+  try {
+    const postsRef = collectionGroup(db, "posts");
+    const postsQuery = query(postsRef, orderBy("createdAt", "desc"));
+    const postsSnap = await getDocs(postsQuery);
+
+    postsSnap.forEach(async (doc) => {
+      posts.push({ _id: doc.id, ...doc.data() });
+    });
+
+    return new Promise((resolve, reject) => {
+      resolve(posts);
+    });
+  } catch (error) {
+    return new Promise((resolve, reject) => {
+      reject(error);
+    });
+  }
+}
+
+export function useGetAllPosts() {
+  const allPosts = useQuery({
+    queryKey: ["allPosts"],
+    queryFn: () => getAllPosts(),
+  });
+
+  return allPosts;
+}
+
+async function createPost(id, post) {
+  const docRef = doc(db, "users", id, "posts", post.postId);
+  return await setDoc(docRef, post);
+}
+
+export function useCreatePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data) => {
+      return createPost(data.userId, data.postData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["allPosts"]);
+    },
+  });
+}
+
+async function deletePost(userId, postId) {
+  return await deleteDoc(doc(db, "users", userId, "posts", postId));
+}
+
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data) => {
+      return deletePost(data.userId, data.postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["allPosts"]);
+      queryClient.invalidateQueries(["userPosts"]);
+    },
+  });
+}
+
+async function bookmarkPost(userId, postId) {
+  return updateDoc(doc(db, "users", userId), {
+    bookmarks: arrayUnion(postId),
+  });
+}
+
+export function useBookmarkPost(postId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, postId }) => {
+      return bookmarkPost(userId, postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+}
+
+async function removeBookmarkPost(userId, postId) {
+  return updateDoc(doc(db, "users", userId), {
+    bookmarks: arrayRemove(postId),
+  });
+}
+
+export function useRemoveBookmarkPost(postId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, postId }) => {
+      return removeBookmarkPost(userId, postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+}
+
+async function getBoookmarkPosts(bookmarks) {
   const posts = [];
 
-  const postsRef = collectionGroup(db, "posts");
-  const postsQuery = query(postsRef, orderBy("createdAt", "desc"));
-  const postsSnap = await getDocs(postsQuery);
+  if (bookmarks?.length) {
+    try {
+      const postsRef = collectionGroup(db, "posts");
+      const postsQuery = query(postsRef, where("postId", "in", bookmarks));
+      const postsSnap = await getDocs(postsQuery);
 
-  postsSnap.forEach(async (doc) => {
-    posts.push({ _id: doc.id, ...doc.data() });
-  });
+      postsSnap.forEach(async (doc) => {
+        posts.push({ _id: doc.id, ...doc.data() });
+      });
 
-  return posts;
-}
+      return new Promise((resolve) => {
+        resolve(posts);
+      });
+    } catch (error) {
+      return new Promise((resolve, reject) => {
+        reject(error);
+      });
+    }
+  }
 
-function usePostsData() {
-  const {
-    isLoading: postsLoader,
-    error: postsError,
-    data: postsData,
-  } = useQuery({
-    queryKey: ["postsData"],
-    queryFn: () => fetchPosts(),
-  });
-
-  return { postsLoader, postsError, postsData };
-}
-
-async function postPostData(id, postData) {
-  const docRef = doc(db, "users", id, "posts", uuid());
-  await setDoc(docRef, postData);
-}
-
-export function useAddPostData() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data) => {
-      return postPostData(data.userId, data.postData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["postsData"]);
-    },
+  return new Promise((resolve, reject) => {
+    resolve(posts);
   });
 }
 
-async function deletePostData(userId, postId) {
-  await deleteDoc(doc(db, "users", userId, "posts", postId));
-}
-
-export function useDeletePostData() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data) => {
-      return deletePostData(data.userId, data.postId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["postsData"]);
-    },
+export function useGetBoookmarkPosts(bookmakrs) {
+  const bookmarks = useQuery({
+    queryKey: ["bookmarks"],
+    queryFn: () => getBoookmarkPosts(bookmakrs),
   });
-}
 
+  return bookmarks;
+}
 async function likePost(userId, postId) {
   try {
     await runTransaction(db, async (transaction) => {
@@ -112,7 +191,7 @@ export function useLikePost(postId) {
       return likePost(userId, postId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["postsData"]);
+      queryClient.invalidateQueries(["allPosts"]);
       queryClient.invalidateQueries([`like-${postId}`]);
     },
   });
@@ -148,7 +227,7 @@ export function useRemoveLike(postId) {
       return removeLike(userId, postId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["postsData"]);
+      queryClient.invalidateQueries(["allPosts"]);
       queryClient.invalidateQueries([`like-${postId}`]);
     },
   });
@@ -166,71 +245,3 @@ export function useGetLikeStatus(userId, postId) {
 
   return { data: like };
 }
-
-async function bookmarkPost(userId, postId) {
-  try {
-    await runTransaction(db, async (transaction) => {
-      await transaction.update(doc(db, "users", userId), {
-        bookmarks: arrayUnion(postId),
-      });
-    });
-  } catch (error) {
-    return new Promise((resolve, reject) => {
-      reject(error);
-    });
-  }
-
-  return new Promise((resolve) => {
-    resolve();
-  });
-}
-
-export function useBookmarkPost(postId) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ userId, postId }) => {
-      return bookmarkPost(userId, postId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["postsData"]);
-      queryClient.invalidateQueries([`bookmark-${postId}`]);
-      queryClient.invalidateQueries([`userData`]);
-    },
-  });
-}
-
-async function removeBookmarkPost(userId, postId) {
-  try {
-    await runTransaction(db, async (transaction) => {
-      await transaction.update(doc(db, "users", userId), {
-        bookmarks: arrayRemove(postId),
-      });
-    });
-  } catch (error) {
-    return new Promise((resolve, reject) => {
-      reject(error);
-    });
-  }
-
-  return new Promise((resolve) => {
-    resolve();
-  });
-}
-
-export function useRemoveBookmarkPost(postId) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ userId, postId }) => {
-      return removeBookmarkPost(userId, postId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["postsData"]);
-      queryClient.invalidateQueries([`bookmark-${postId}`]);
-      queryClient.invalidateQueries([`userData`]);
-    },
-  });
-}
-
-export default usePostsData;

@@ -4,28 +4,29 @@ import PostCard from "../components/PostCard/PostCard";
 import Input from "../components/Input";
 import Button, { Spin } from "../components/Button";
 import { useState } from "react";
-
+import { v4 as uuid } from "uuid";
 import getDate from "../utils/getDate";
 import { serverTimestamp } from "firebase/firestore";
 import { auth } from "../firebase.config";
 import Spinner from "../components/Spinner";
-import usePostsData, { useAddPostData } from "../hooks/usePostsData";
-import useUserData from "../hooks/useUserData";
+import { useCreatePost, useGetAllPosts } from "../hooks/usePostsData";
+import { useGetUser } from "../hooks/useUserData";
 
 export default function HomePage() {
   const userId = auth.currentUser?.uid;
-  const { postsLoader, postsError, postsData } = usePostsData();
-  const { userLoader, userError, userData: user } = useUserData(userId);
-
-  const { mutate: addPost, isLoading } = useAddPostData();
-
   const [post, setPost] = useState("");
+
+  const { isLoading: postsLoader, data: postsData } = useGetAllPosts();
+  const { isLoading: userLoader, data: user } = useGetUser(userId);
+
+  const { mutate: addPost, isLoading } = useCreatePost();
 
   function handleChange(e) {
     setPost(e.target.value);
   }
 
   const postDetails = {
+    postId: uuid(),
     description: post,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -48,7 +49,7 @@ export default function HomePage() {
     setPost("");
   }
 
-  if (userLoader || postsLoader) {
+  if (userLoader) {
     return <Spinner />;
   }
 
@@ -67,7 +68,7 @@ export default function HomePage() {
           onChange={handleChange}
         />
         <div className="text-right mt-4">
-          <Button type="success" size={"medium"} disabled={isLoading}>
+          <Button type="success" size={"medium"} disabled={postsLoader}>
             Share
           </Button>
         </div>
@@ -75,7 +76,7 @@ export default function HomePage() {
       {
         <p className="flex items-start justify-center pt-4">
           {" "}
-          {isLoading ? <Spin /> : null}{" "}
+          {postsLoader || isLoading ? <Spin /> : null}{" "}
         </p>
       }
       <ul className="md:px-24 py-2">

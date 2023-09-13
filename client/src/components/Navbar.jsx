@@ -13,13 +13,14 @@ import SearchBar from "./SearchBar";
 import Avatar from "./Avatar";
 import Logo from "./Logo";
 import { Link, useNavigate } from "react-router-dom";
-import useUserData from "../hooks/useUserData";
+import { useGetUser } from "../hooks/useUserData";
 import { auth } from "../firebase.config";
+import { toast } from "react-toastify";
 
 export default function Navbar() {
-  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
   const navigate = useNavigate();
-  const { userData: user } = useUserData(auth.currentUser?.uid);
+  const { data: user } = useGetUser(userId);
 
   const [popUpMenu, setPopUpMenu] = useState(false);
   const [searchResult, setSearchResult] = useState(false);
@@ -34,7 +35,14 @@ export default function Navbar() {
 
   function closeMenu() {}
 
-  function logout() {}
+  async function logout() {
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
 
   function selectUser(id) {
     navigate(`/${id}`);

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Layout from "../components/Layout";
 import SettingsCard from "../components/SettingsCard";
 import Input from "../components/Input";
@@ -6,17 +6,41 @@ import Button from "../components/Button";
 import { useState } from "react";
 import { deleteUser, getAuth, updatePassword } from "firebase/auth";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase.config";
+import { auth, db } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import {
+  useDeleteUser,
+  useGetUser,
+  useUpdatePassword,
+  useUpdateUser,
+} from "../hooks/useUserData";
 
 export default function SettingsPage() {
-  const auth = getAuth();
+  const userId = auth.currentUser?.uid;
 
   const navigate = useNavigate();
+  const { isLoading: userLoader, data } = useGetUser(userId);
+  const { mutate: updatePassword, isLoading: updatePasswordLoader } =
+    useUpdatePassword(auth?.currentUser);
+  const { mutate: deleteUserAcc, isLoading: deleteUseAccLoader } =
+    useDeleteUser(auth?.currentUser);
+  const { mutate: updateUser, isLoading: updateUserLoading } =
+    useUpdateUser(userId);
+  const [currentUserData, setCurrentUserData] = useState({
+    firstName: "",
+    lastName: "",
+    briefBio: "",
+  });
 
-  const [currentUserData, setCurrentUserData] = useState();
+  useEffect(() => {
+    setCurrentUserData({
+      firstName: data?.firstName,
+      lastName: data?.lastName,
+      briefBio: data?.briefBio,
+    });
+  }, [data?._id]);
 
   const [passwordSettings, setPasswordSettings] = useState({
     currentPassword: "",
@@ -26,25 +50,45 @@ export default function SettingsPage() {
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setCurrentUserData((prev) => ({ ...prev, [name]: value }));
     setPasswordSettings((prev) => ({ ...prev, [name]: value }));
+    setCurrentUserData((prev) => ({ ...prev, [name]: value }));
   }
 
   async function updateUserData(e) {
     e.preventDefault();
+    updateUser(currentUserData);
   }
 
-  function changePassword(e) {}
+  function changePassword(e) {
+    e.preventDefault();
+    if (passwordSettings.newPassword === passwordSettings.confirmNewPassword) {
+      updatePassword(passwordSettings.newPassword);
+      setPasswordSettings({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+    }
+    toast.warning("password not matching!");
+  }
 
-  function deleteAccount() {}
+  async function deleteAccount() {
+    await deleteUserAcc();
+    navigate("/");
+  }
 
-  async function deleteUserPost(id) {}
-  async function deleteUserData(id) {}
+  if (userLoader) {
+    return <Spinner />;
+  }
 
   return (
     <Layout>
       <section className="px-[2%] py-4 flex flex-col gap-4 mb-12">
-        <SettingsCard title={"Basic Profile"} onSubmit={updateUserData}>
+        <SettingsCard
+          title={"Basic Profile"}
+          onSubmit={updateUserData}
+          loading={updateUserLoading}
+        >
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <Input
               label={"First Name"}
@@ -77,7 +121,11 @@ export default function SettingsPage() {
           </div>
         </SettingsCard>
 
-        <SettingsCard title={"Change Password"} onSubmit={changePassword}>
+        <SettingsCard
+          title={"Change Password"}
+          onSubmit={changePassword}
+          loading={updatePasswordLoader}
+        >
           <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
             <Input
               label={"Current Password"}
@@ -112,7 +160,11 @@ export default function SettingsPage() {
             Delete your account and account data. This can’t be undone!
           </p>
 
-          <Button type={"secondary"} onClick={deleteAccount}>
+          <Button
+            type={"secondary"}
+            onClick={deleteAccount}
+            isLoading={deleteUseAccLoader}
+          >
             Delete my account
           </Button>
         </SettingsCard>
