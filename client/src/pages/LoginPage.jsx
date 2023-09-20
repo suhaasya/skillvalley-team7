@@ -15,6 +15,7 @@ import { isUserExists, signWithGoogle } from "../utils/firebaseFunctions";
 export default function LoginPage() {
   const auth = getAuth();
   const navigate = useNavigate();
+  const [showDummy, setShowDummy] = useState(false);
   const [loader, setLoader] = useState(false);
 
   const [loginData, setLoginData] = useState({
@@ -99,6 +100,18 @@ export default function LoginPage() {
             SignUp
           </span>
         </Link>
+        <p
+          className="font-medium cursor-pointer"
+          onClick={() => setShowDummy((prev) => !prev)}
+        >
+          {showDummy ? "hide" : "click here for"} dummy credentials
+        </p>
+        {showDummy ? (
+          <p>email:howoha9353@fandsend.com pass: Password123</p>
+        ) : null}
+        {showDummy ? (
+          <p>email:soyed50743@cdeter.com pass: Password123</p>
+        ) : null}
       </p>
     </FormContainer>
   );
