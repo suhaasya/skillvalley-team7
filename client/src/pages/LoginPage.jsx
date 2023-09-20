@@ -10,7 +10,7 @@ import { useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import { toast } from "react-toastify";
-import { isUserExists } from "../utils/firebaseFunctions";
+import { isUserExists, signWithGoogle } from "../utils/firebaseFunctions";
 
 export default function LoginPage() {
   const auth = getAuth();
@@ -49,13 +49,25 @@ export default function LoginPage() {
     setLoader(false);
   }
 
+  async function handleSignWithGoogle() {
+    const user = await signWithGoogle();
+
+    if (user) {
+      navigate("/home");
+      return;
+    }
+
+    navigate("/welcome");
+    return;
+  }
+
   return (
     <FormContainer onSubmit={onSubmit}>
       <div className="flex items-center justify-center">
         <h3 className="text-2xl font-medium">Login to Scream-One</h3>
         <FcLock size={"1.5rem"} />
       </div>
-      <GoogleSignUpButton onClick={() => {}} />
+      <GoogleSignUpButton onClick={handleSignWithGoogle} />
       <p className="text-center">or</p>
       <Input
         label="Email"

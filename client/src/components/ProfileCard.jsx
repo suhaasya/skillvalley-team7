@@ -8,6 +8,7 @@ export default function ProfileCard({
   userBio,
   onClick,
   id,
+  active,
 }) {
   return noUser ? (
     <li className="py-1 px-2 text-center">
@@ -20,8 +21,8 @@ export default function ProfileCard({
       <li
         className={` py-1 px-2 ${
           userName !== "undefined undefined" &&
-          "cursor-pointer hover:bg-dark_white"
-        } flex items-center gap-1`}
+          "cursor-pointer hover:bg-light_gray"
+        } flex items-center gap-1 ${active ? "bg-light_gray" : ""}`}
         onClick={() => onClick(id)}
       >
         {userName !== "undefined undefined" && (

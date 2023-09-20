@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  arrayUnion,
   collection,
   collectionGroup,
   deleteDoc,
@@ -7,6 +8,7 @@ import {
   getDoc,
   getDocs,
   or,
+  orderBy,
   query,
   runTransaction,
   setDoc,
@@ -16,6 +18,7 @@ import {
 import { db } from "../firebase.config";
 import { deleteUser, updatePassword } from "firebase/auth";
 import { toast } from "react-toastify";
+import { v4 as uuid } from "uuid";
 
 async function getUser(id) {
   if (id) {
@@ -187,4 +190,138 @@ export function useSearchUsers(query) {
   });
 
   return users;
+}
+
+async function createUserChat(currentUser, otherUser) {
+  const docRef1 = doc(db, "users", currentUser._id, "chats", otherUser._id);
+  const docRef2 = doc(db, "users", otherUser._id, "chats", currentUser._id);
+  const docRef3 = doc(db, "chats", currentUser._id + otherUser._id);
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      transaction.set(docRef1, otherUser);
+      transaction.set(docRef2, currentUser);
+      transaction.set(docRef3, { messages: [] });
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export function useCreateUserChat() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (users) => {
+      return createUserChat(users.currentUser, users.otherUser);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["userChats"]);
+    },
+  });
+}
+
+async function getAllChats(id) {
+  const chats = [];
+  if (!id) {
+    throw new Error("id undefined");
+  }
+  try {
+    const chatsRef = collection(db, "users", id, "chats");
+    const chatsQuery = query(chatsRef, orderBy("createdAt", "desc"));
+    const chatsSnap = await getDocs(chatsQuery);
+    chatsSnap.forEach(async (doc) => {
+      chats.push({ ...doc.data() });
+    });
+  } catch (error) {
+    return new Promise((resolve, reject) => {
+      reject(error);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    resolve(chats);
+  });
+}
+
+export function useGetAllChats(userId) {
+  const allUserChats = useQuery({
+    queryKey: ["userChats"],
+    queryFn: () => getAllChats(userId),
+  });
+
+  return allUserChats;
+}
+
+async function createMessage({ id1, id2 }, data) {
+  const docRef1 = doc(db, "chats", id1 + id2);
+  const docRef2 = doc(db, "chats", id2 + id1);
+
+  try {
+    const docSnap1 = await getDoc(docRef1);
+    const docSnap2 = await getDoc(docRef2);
+    if (docSnap1.exists()) {
+      return await updateDoc(docRef1, { messages: arrayUnion(data) });
+    }
+    if (docSnap2.exists()) {
+      return await updateDoc(docRef2, { messages: arrayUnion(data) });
+    }
+  } catch (error) {
+    return new Promise((resolve, reject) => {
+      reject(error);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    resolve();
+  });
+}
+
+export function useCreateMessage(id) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data) => {
+      return createMessage(id, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+}
+
+async function getMessages(id1, id2) {
+  let messages = null;
+
+  const docRef1 = doc(db, "chats", `${id1}${id2}`);
+  const docRef2 = doc(db, "chats", `${id2}${id1}`);
+
+  try {
+    const docSnap1 = await getDoc(docRef1);
+    const docSnap2 = await getDoc(docRef2);
+    if (docSnap1.exists()) {
+      messages = docSnap1.data();
+    }
+    if (docSnap2.exists()) {
+      messages = docSnap2.data();
+    }
+  } catch (error) {
+    return new Promise((resolve, reject) => {
+      reject(error);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    resolve(messages?.messages);
+  });
+}
+
+export function useGetMessages({ userId, activeChatId }) {
+  const allUserChats = useQuery({
+    queryKey: [`chats`, `${userId}${activeChatId}`],
+    queryFn: () => getMessages(userId, activeChatId),
+    refetchInterval: 1000,
+  });
+
+  return allUserChats;
 }

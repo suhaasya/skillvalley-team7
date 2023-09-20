@@ -8,6 +8,7 @@ import Input from "../components/Input";
 
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
+import { signWithGoogle } from "../utils/firebaseFunctions";
 
 export default function SignupPage() {
   const auth = getAuth();
@@ -39,10 +40,22 @@ export default function SignupPage() {
     setSignupData({ email: "", password: "" });
   }
 
+  async function handleSignWithGoogle() {
+    const user = await signWithGoogle();
+
+    if (user) {
+      navigate("/home");
+      return;
+    }
+
+    navigate("/welcome");
+    return;
+  }
+
   return (
     <FormContainer onSubmit={onSubmit}>
       <h3 className="text-center text-2xl font-medium">Join Scream-One</h3>
-      <GoogleSignUpButton onClick={() => {}} />
+      <GoogleSignUpButton onClick={handleSignWithGoogle} />
       <p className="text-center">or</p>
       <Input
         label={"Email"}

@@ -14,146 +14,123 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import ProfileCard from "../components/ProfileCard";
 import SearchBar from "../components/SearchBar";
-import { db } from "../firebase.config";
+import { auth, db } from "../firebase.config";
+import { useNavigate } from "react-router-dom";
+import {
+  useCreateUserChat,
+  useGetAllChats,
+  useGetUser,
+  useSearchUsers,
+} from "../hooks/useUserData";
 
-export default function ChatSidebar() {
-  // const [users, setUsers] = useState(null);
-  // const [chats, setChats] = useState(null);
-  // const [searchValue, setSearchValue] = useState("");
-  // const [err, setErr] = useState(false);
+export default function ChatSidebar({ onChatSelect, activeChatId }) {
+  const userId = auth.currentUser?.uid;
+  const navigate = useNavigate();
+  const { data: user } = useGetUser(userId);
 
-  // const { currentUser } = useContext(AuthContext);
-  // const { user: currentUserData } = useSelector((state) => state.user);
+  const [popUpMenu, setPopUpMenu] = useState(false);
+  const [searchResult, setSearchResult] = useState(false);
+  const [searchUsersData, setSearchUsersData] = useState();
+  const { data: userChats } = useGetAllChats(userId);
 
-  // const { dispatch } = useContext(ChatContext);
+  const [searchValue, setSearchValue] = useState("");
+  const { data } = useSearchUsers(searchValue);
+  const { mutate } = useCreateUserChat(userId);
 
-  // useEffect(() => {
-  //   function getChats() {
-  //     const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
-  //       setChats(Object.entries(doc.data()));
-  //     });
-  //     return () => {
-  //       unsub();
-  //     };
-  //   }
-  //   currentUser.uid && getChats();
-  // }, [currentUser.uid]);
+  function handleChange(e) {
+    setSearchValue(e.target.value);
+  }
 
-  // function handleChange(e) {
-  //   setErr(false);
-  //   const { value } = e.target;
-  //   setSearchValue(value);
-  // }
+  function handleClick() {
+    setPopUpMenu((prev) => !prev);
+  }
 
-  // async function handleSearch() {
-  //   const q = query(
-  //     collection(db, "users"),
-  //     where("firstName", "==", searchValue)
-  //   );
+  function closeMenu() {
+    setSearchResult(false);
+  }
 
-  //   try {
-  //     const querySnapshot = await getDocs(q);
-  //     const searchedUsers = [];
-  //     querySnapshot.forEach((doc) => {
-  //       searchedUsers.push({ _id: doc.id, ...doc.data() });
-  //     });
-  //     searchedUsers.length === 0 && setErr(true);
-  //     setUsers(searchedUsers.filter((user) => user._id !== currentUser.uid));
-  //   } catch (err) {
-  //     setErr(true);
-  //     console.log(err.message);
-  //   }
-  // }
+  function handleChange(e) {
+    setSearchValue(e.target.value);
+  }
 
-  // function handleKey(e) {
-  //   e.code === "Enter" && handleSearch();
-  // }
+  async function handleCreateChat(otherUser) {
+    const currentUser = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      _id: user._id,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
 
-  // async function handleSelect(id) {
-  //   // Logged in User Data
-  //   const userRef = doc(db, "users", id);
-  //   const userSnap = await getDoc(userRef);
-  //   const user = { uid: userSnap.id, ...userSnap.data() };
+    const user2 = {
+      firstName: otherUser.firstName,
+      lastName: otherUser.lastName,
+      _id: otherUser._id,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
 
-  //   const combinedId =
-  //     currentUser.uid > user.uid
-  //       ? currentUser.uid + user.uid
-  //       : user.uid + currentUser.uid;
-
-  //   try {
-  //     const res = await getDoc(doc(db, "chats", combinedId));
-  //     if (!res.exists()) {
-  //       //create a chat in chats collection
-  //       await setDoc(doc(db, "chats", combinedId), { messages: [] });
-  //     }
-
-  //     //create user chats
-
-  //     await updateDoc(doc(db, "userChats", currentUser.uid), {
-  //       [combinedId + ".userInfo"]: {
-  //         _id: user.uid,
-  //         firstName: user.firstName,
-  //         lastName: user.lastName,
-  //       },
-  //       [combinedId + ".date"]: serverTimestamp(),
-  //     });
-
-  //     await updateDoc(doc(db, "userChats", id), {
-  //       [combinedId + ".userInfo"]: {
-  //         _id: currentUserData._id,
-  //         firstName: currentUserData.firstName,
-  //         lastName: currentUserData.lastName,
-  //       },
-  //       [combinedId + ".date"]: serverTimestamp(),
-  //     });
-  //   } catch (error) {}
-
-  //   setSearchValue("");
-  //   setUsers(null);
-  // }
-
-  // function getChats(user) {
-  //   dispatch({ type: "CHANGE_USER", payload: user });
-  // }
+    await mutate({ currentUser: currentUser, otherUser: user2 });
+  }
 
   return (
-    <div className="w-2/5 border-solid border-r-2 border-light_gray overflow-y-scroll h-full">
-      {/* <div className="flex justify-center py-1 flex-col items-center">
+    <div
+      className="w-2/5 border-solid border-r-2 border-light_gray overflow-y-scroll h-full"
+      onClick={() => setSearchResult(false)}
+    >
+      <div className="flex justify-center py-1 flex-col items-center">
         <SearchBar
-          value={searchValue}
-          setValue={setSearchValue}
           onChange={handleChange}
-          onKeyDown={handleKey}
-          type={"small"}
+          value={searchValue}
+          onKeyDown={() => {
+            setSearchResult(true);
+          }}
+          setValue={setSearchValue}
         />
+
+        <ul
+          className={
+            searchResult
+              ? "absolute  border-solid border-2 rounded-lg p-1 bg-white top-32 w-60 sm:w-80 max-h-80 overflow-y-scroll z-10"
+              : "hidden"
+          }
+        >
+          {/* 
+            Profile Card shown in search result
+            */}
+
+          {data?.length ? (
+            data?.map((user) =>
+              user._id !== userId ? (
+                <ProfileCard
+                  userName={`${user.firstName} ${user.lastName}`}
+                  userBio={user.briefBio}
+                  key={user._id}
+                  onClick={() => {
+                    handleCreateChat(user);
+                  }}
+                />
+              ) : null
+            )
+          ) : (
+            <ProfileCard noUser={true} />
+          )}
+        </ul>
       </div>
-
-      {users && (
-        <div className="border-solid border-b">
-          {users.map((user, i) => (
+      <ul className="flex flex-col gap-2">
+        {userChats?.map((user) => (
+          <li>
             <ProfileCard
-              onClick={() => handleSelect(user._id)}
+              userName={`${user.firstName} ${user.lastName}`}
+              userBio={user.briefBio}
+              key={user._id}
               id={user._id}
-              key={i}
-              userName={`${user.firstName.trim()} ${user.lastName.trim()}`}
-              userBio={user.description}
+              active={activeChatId === user._id}
+              onClick={onChatSelect}
             />
-          ))}
-          {err && <span>user does not exists</span>}
-        </div>
-      )}
-
-      {chats
-        ?.sort((a, b) => b[1].date - a[1].date)
-        .map((chat) => (
-          <ProfileCard
-            onClick={() => getChats(chat[1].userInfo)}
-            key={chat[0]}
-            userName={`${chat[1].userInfo.firstName.trim()} ${chat[1].userInfo.lastName.trim()}`}
-          />
+          </li>
         ))}
-
-      <ProfileCard /> */}
+      </ul>
     </div>
   );
 }

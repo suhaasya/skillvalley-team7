@@ -27,7 +27,6 @@ export default function Navbar() {
   const [searchUsersData, setSearchUsersData] = useState();
   const [searchValue, setSearchValue] = useState("");
   const { data } = useSearchUsers(searchValue);
-  console.log(data);
 
   function handleChange(e) {
     setSearchValue(e.target.value);
@@ -48,10 +47,6 @@ export default function Navbar() {
     } catch (error) {
       toast.error(error.message);
     }
-  }
-
-  function selectUser(id) {
-    navigate(`/${id}`);
   }
 
   return (
